@@ -92,30 +92,19 @@
     });
 
     async function handleFiles(files) {
-      const remaining = 8 - state.photos.length;
-      const toProcess = files.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/')).slice(0, remaining);
+      const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+      const remaining = 20 - state.photos.length;
+      const toProcess = validFiles.slice(0, remaining);
 
-      if (toProcess.length === 0) {
-        if (state.photos.length >= 8) showToast('Máximo de 8 mídias atingido!');
-        return;
+      if (validFiles.length > remaining) {
+        showToast(`Você pode adicionar no máximo 20 fotos.`);
       }
 
       for (const file of toProcess) {
+        showToast(`Processando foto ${file.name}...`);
         try {
-          if (file.type.startsWith('video/')) {
-            if (file.size > 200 * 1024 * 1024) {
-              showToast(`Vídeo ${file.name} ignorado (maior que 200MB).`);
-              continue;
-            }
-            showToast(`Enviando vídeo ${file.name}... (isso pode demorar)`);
-            const videoUrl = await uploadVideoDirectly(file);
-            state.photos.push({ src: videoUrl, type: 'video', story: '', caption: '' });
-            showToast(`Vídeo ${file.name} enviado!`);
-          } else {
-            showToast(`Processando foto ${file.name}...`);
-            const src = await Encoder.compressImage(file, 700, 0.62);
-            state.photos.push({ src, type: 'image', story: '', caption: '' });
-          }
+          const src = await Encoder.compressImage(file, 700, 0.62);
+          state.photos.push({ src, type: 'image', story: '', caption: '' });
         } catch (e) {
           console.error('Error processing file:', e);
           showToast(`Erro ao processar ${file.name}`);
@@ -124,23 +113,6 @@
 
       renderPhotoGrid();
       updatePhotoCounter();
-    }
-
-    async function uploadVideoDirectly(file) {
-      // 1. Obter Presigned URL da API
-      const res = await fetch(`${Encoder.apiBase}?action=upload&filename=${encodeURIComponent(file.name)}&filetype=${encodeURIComponent(file.type)}`);
-      if (!res.ok) throw new Error('Falha ao obter link de upload.');
-      const { uploadUrl, publicUrl } = await res.json();
-
-      // 2. Fazer PUT direto no S3
-      const putRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file
-      });
-      
-      if (!putRes.ok) throw new Error('Falha no upload para o S3.');
-      return publicUrl;
     }
 
     function renderPhotoGrid() {
@@ -152,10 +124,7 @@
         item.dataset.index = idx;
         item.draggable = true;
         
-        const previewHtml = media.type === 'video' 
-          ? `<video src="${media.src}#t=0.5" muted preload="metadata" style="object-fit: cover; width: 100%; height: 100%; border-radius: 8px;"></video>
-             <div style="position:absolute; top:5px; left:5px; background:rgba(0,0,0,0.6); color:#fff; font-size:10px; padding:2px 5px; border-radius:4px;">🎥 VÍDEO</div>`
-          : `<img src="${media.src}" alt="Mídia ${idx + 1}">`;
+        const previewHtml = `<img src="${media.src}" alt="Mídia ${idx + 1}">`;
 
         item.innerHTML = `
           <span class="photo-order">${idx + 1}</span>
@@ -185,7 +154,7 @@
         counter.className = 'photo-count';
         zone.insertAdjacentElement('afterend', counter);
       }
-      counter.textContent = `${state.photos.length}/8 fotos adicionadas`;
+      counter.textContent = `${state.photos.length}/20 fotos adicionadas`;
       counter.style.display = state.photos.length > 0 ? 'block' : 'none';
     }
 
