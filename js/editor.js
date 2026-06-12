@@ -1,0 +1,462 @@
+/* ============================================================
+   EDITOR.JS — Lógica Completa do Editor Wizard
+   ============================================================ */
+
+(function () {
+  'use strict';
+
+  /* ── State ── */
+  const state = {
+    currentStep: 1,
+    theme: 'valentine',
+    recipientName: '',
+    senderName: '',
+    specialDate: '',
+    openingMessage: '',
+    closingMessage: '',
+    photos: [],         // array of { src: base64, story: string, caption: string }
+    youtubeUrl: '',
+  };
+
+  let particles = null;
+
+  /* ── Init ── */
+  document.addEventListener('DOMContentLoaded', () => {
+    initParticles();
+    initThemeCards();
+    initPhotoUpload();
+    initNavigation();
+    initFinalize();
+
+    // Scroll to editor when CTA clicked
+    document.getElementById('startCreating')?.addEventListener('click', () => {
+      document.getElementById('create').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  /* ── Particles ── */
+  function initParticles() {
+    const t = getTheme(state.theme);
+    particles = new ParticleSystem('particleCanvas', t.particleType, [t.particleColor, t.particleColor2]);
+  }
+
+  /* ── Theme Cards ── */
+  function initThemeCards() {
+    document.querySelectorAll('.occasion-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.occasion-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        state.theme = card.dataset.theme;
+        switchTheme(state.theme);
+      });
+    });
+  }
+
+  function switchTheme(themeId) {
+    const t = applyTheme(themeId);
+    if (particles) {
+      particles.updateType(t.particleType);
+      particles.updateColors([t.particleColor, t.particleColor2]);
+    }
+    // Update phone preview
+    const preview = document.querySelector('.phone-screen');
+    if (preview) preview.style.background = t.gradient;
+    const previewEmoji = document.querySelector('.preview-hearts');
+    if (previewEmoji) previewEmoji.textContent = t.icons[0];
+  }
+
+  /* ── Photo Upload ── */
+  function initPhotoUpload() {
+    const zone    = document.getElementById('uploadZone');
+    const input   = document.getElementById('photoInput');
+    const grid    = document.getElementById('photosGrid');
+
+    if (!zone || !input) return;
+
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.classList.add('drag-over');
+    });
+
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      handleFiles(Array.from(e.dataTransfer.files));
+    });
+
+    input.addEventListener('change', (e) => {
+      handleFiles(Array.from(e.target.files));
+      input.value = '';
+    });
+
+    async function handleFiles(files) {
+      const remaining = 8 - state.photos.length;
+      const toProcess = files.filter(f => f.type.startsWith('image/')).slice(0, remaining);
+
+      if (toProcess.length === 0) {
+        if (state.photos.length >= 8) showToast('Máximo de 8 fotos atingido!');
+        return;
+      }
+
+      showToast(`Processando ${toProcess.length} foto(s)...`);
+
+      for (const file of toProcess) {
+        try {
+          const src = await Encoder.compressImage(file, 700, 0.62);
+          state.photos.push({ src, story: '', caption: '' });
+        } catch (e) {
+          console.error('Error compressing image:', e);
+        }
+      }
+
+      renderPhotoGrid();
+      updatePhotoCounter();
+    }
+
+    function renderPhotoGrid() {
+      grid.innerHTML = '';
+
+      state.photos.forEach((photo, idx) => {
+        const item = document.createElement('div');
+        item.className = 'photo-item';
+        item.dataset.index = idx;
+        item.draggable = true;
+        item.innerHTML = `
+          <span class="photo-order">${idx + 1}</span>
+          <img src="${photo.src}" alt="Foto ${idx + 1}">
+          <button class="photo-remove" title="Remover" data-idx="${idx}">✕</button>
+        `;
+        grid.appendChild(item);
+      });
+
+      // Remove buttons
+      grid.querySelectorAll('.photo-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.photos.splice(parseInt(btn.dataset.idx), 1);
+          renderPhotoGrid();
+          updatePhotoCounter();
+        });
+      });
+
+      initDragSort(grid);
+    }
+
+    function updatePhotoCounter() {
+      let counter = document.querySelector('.photo-count');
+      if (!counter) {
+        counter = document.createElement('p');
+        counter.className = 'photo-count';
+        zone.insertAdjacentElement('afterend', counter);
+      }
+      counter.textContent = `${state.photos.length}/8 fotos adicionadas`;
+      counter.style.display = state.photos.length > 0 ? 'block' : 'none';
+    }
+
+    // Expose renderPhotoGrid for use in step 4
+    window._renderPhotoGrid = renderPhotoGrid;
+  }
+
+  /* ── Drag-sort photos ── */
+  function initDragSort(grid) {
+    let dragSrc = null;
+
+    grid.querySelectorAll('.photo-item').forEach(item => {
+      item.addEventListener('dragstart', () => {
+        dragSrc = item;
+        setTimeout(() => item.style.opacity = '0.4', 0);
+      });
+
+      item.addEventListener('dragend', () => {
+        item.style.opacity = '1';
+      });
+
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        item.style.border = '2px solid var(--primary)';
+      });
+
+      item.addEventListener('dragleave', () => {
+        item.style.border = '';
+      });
+
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        item.style.border = '';
+        if (dragSrc !== item) {
+          const srcIdx = parseInt(dragSrc.dataset.index);
+          const dstIdx = parseInt(item.dataset.index);
+          const tmp = state.photos[srcIdx];
+          state.photos[srcIdx] = state.photos[dstIdx];
+          state.photos[dstIdx] = tmp;
+          if (window._renderPhotoGrid) window._renderPhotoGrid();
+        }
+      });
+    });
+  }
+
+  /* ── Navigation ── */
+  function initNavigation() {
+    // Step 1 → 2
+    document.getElementById('step1Next')?.addEventListener('click', () => goToStep(2));
+
+    // Step 2 ↔ 3
+    document.getElementById('step2Back')?.addEventListener('click', () => goToStep(1));
+    document.getElementById('step2Next')?.addEventListener('click', () => {
+      collectStep2();
+      goToStep(3);
+    });
+
+    // Step 3 ↔ 4
+    document.getElementById('step3Back')?.addEventListener('click', () => goToStep(2));
+    document.getElementById('step3Next')?.addEventListener('click', () => {
+      if (state.photos.length === 0) {
+        showToast('Adicione pelo menos 1 foto para continuar!');
+        return;
+      }
+      goToStep(4);
+      renderStoryCards();
+    });
+
+    // Step 4 ↔ 5
+    document.getElementById('step4Back')?.addEventListener('click', () => goToStep(3));
+    document.getElementById('step4Next')?.addEventListener('click', () => {
+      collectStories();
+      goToStep(5);
+    });
+
+    // Step 5 back
+    document.getElementById('step5Back')?.addEventListener('click', () => goToStep(4));
+  }
+
+  function goToStep(step) {
+    const current = document.querySelector('.editor-step.active');
+    const next = document.getElementById(`step-${step}`);
+    if (!next) return;
+
+    if (current) {
+      current.style.opacity = '0';
+      current.style.transform = 'translateY(10px)';
+      setTimeout(() => {
+        current.classList.remove('active');
+        current.style.opacity = '';
+        current.style.transform = '';
+        showStep(next);
+      }, 200);
+    } else {
+      showStep(next);
+    }
+
+    updateProgressBar(step);
+    state.currentStep = step;
+
+    // Scroll to editor
+    document.getElementById('create').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showStep(el) {
+    el.classList.add('active');
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+        setTimeout(() => { el.style.transition = ''; }, 400);
+      });
+    });
+  }
+
+  function updateProgressBar(activeStep) {
+    document.querySelectorAll('.progress-step').forEach((step) => {
+      const n = parseInt(step.dataset.step);
+      step.classList.toggle('active', n === activeStep);
+      step.classList.toggle('completed', n < activeStep);
+    });
+
+    document.querySelectorAll('.progress-line').forEach((line, idx) => {
+      line.classList.toggle('filled', idx < activeStep - 1);
+    });
+  }
+
+  /* ── Collect form data ── */
+  function collectStep2() {
+    state.recipientName   = document.getElementById('recipientName')?.value.trim() || '';
+    state.senderName      = document.getElementById('senderName')?.value.trim() || '';
+    state.specialDate     = document.getElementById('specialDate')?.value.trim() || '';
+    state.openingMessage  = document.getElementById('openingMessage')?.value.trim() || '';
+    state.closingMessage  = document.getElementById('closingMessage')?.value.trim() || '';
+  }
+
+  function collectStories() {
+    document.querySelectorAll('.story-card').forEach(card => {
+      const idx = parseInt(card.dataset.index);
+      if (state.photos[idx]) {
+        state.photos[idx].story   = card.querySelector('.story-text')?.value.trim() || '';
+        state.photos[idx].caption = card.querySelector('.story-caption')?.value.trim() || '';
+      }
+    });
+  }
+
+  /* ── Story Cards ── */
+  function renderStoryCards() {
+    const container = document.getElementById('storiesContainer');
+    if (!container) return;
+
+    container.innerHTML = state.photos.map((photo, idx) => `
+      <div class="story-card" data-index="${idx}">
+        <div class="story-card-thumb">
+          <img src="${photo.src}" alt="Foto ${idx + 1}">
+        </div>
+        <div class="story-card-body">
+          <div class="story-card-label">Cena ${idx + 1}</div>
+          <textarea
+            class="form-textarea story-text"
+            placeholder="Descreva esse momento especial... (aparecerá na cena ${idx + 1})"
+            rows="2"
+          >${photo.story}</textarea>
+          <input
+            class="form-input story-caption"
+            type="text"
+            placeholder="Legenda ou data (ex: 'Verão de 2022')"
+            value="${photo.caption}"
+          >
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ── Finalize ── */
+  function initFinalize() {
+    document.getElementById('previewBtn')?.addEventListener('click', () => {
+      collectStep2();
+      collectStories();
+      state.youtubeUrl = document.getElementById('youtubeUrl')?.value.trim() || '';
+
+      const url = Encoder.generateViewerUrl(buildTributeData());
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        showToast('Erro ao gerar preview. Tente novamente.');
+      }
+    });
+
+    document.getElementById('generateBtn')?.addEventListener('click', () => {
+      collectStep2();
+      collectStories();
+      state.youtubeUrl = document.getElementById('youtubeUrl')?.value.trim() || '';
+
+      const data = buildTributeData();
+      const sizeKb = Encoder.estimateSize(data);
+
+      if (sizeKb > 1800) {
+        showToast('Dados muito grandes! Tente usar menos fotos ou imagens menores.');
+        return;
+      }
+
+      const url = Encoder.generateViewerUrl(data);
+      if (url) {
+        showGeneratedLink(url);
+      } else {
+        showToast('Erro ao gerar link. Tente novamente.');
+      }
+    });
+
+    document.getElementById('copyBtn')?.addEventListener('click', () => {
+      const input = document.getElementById('generatedLink');
+      if (input) {
+        navigator.clipboard.writeText(input.value).then(() => {
+          const btn = document.getElementById('copyBtn');
+          btn.textContent = '✓ Copiado!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = 'Copiar';
+            btn.classList.remove('copied');
+          }, 2500);
+        });
+      }
+    });
+  }
+
+  function buildTributeData() {
+    return {
+      v: 1,                                    // version
+      theme: state.theme,
+      recipientName: state.recipientName,
+      senderName: state.senderName,
+      specialDate: state.specialDate,
+      openingMessage: state.openingMessage,
+      closingMessage: state.closingMessage,
+      youtubeUrl: state.youtubeUrl,
+      photos: state.photos,
+    };
+  }
+
+  function showGeneratedLink(url) {
+    const container = document.getElementById('generatedLinkContainer');
+    const linkInput = document.getElementById('generatedLink');
+    const nameDisplay = document.getElementById('recipientNameDisplay');
+    const openBtn = document.getElementById('openViewerBtn');
+
+    if (!container || !linkInput) return;
+
+    linkInput.value = url;
+    if (nameDisplay) nameDisplay.textContent = state.recipientName || 'a pessoa especial';
+    if (openBtn) openBtn.href = url;
+
+    container.style.display = 'block';
+    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // Particle burst celebration
+    if (particles) {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      particles.burst(cx, cy, 40);
+    }
+
+    showToast('🎉 Homenagem criada com sucesso!');
+  }
+
+  /* ── Toast ── */
+  function showToast(message, duration = 3000) {
+    let toast = document.getElementById('editor-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'editor-toast';
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: rgba(20, 20, 40, 0.95);
+        color: #fff;
+        padding: 0.875rem 1.75rem;
+        border-radius: 50px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        z-index: 9999;
+        border: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+        font-family: 'Inter', sans-serif;
+        white-space: nowrap;
+      `;
+      document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(80px)';
+    }, duration);
+  }
+
+})();

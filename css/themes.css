@@ -1,0 +1,154 @@
+/* ============================================================
+   THEMES.CSS — Variáveis Visuais por Tema
+   ============================================================ */
+
+/* ---- Valentine ---- */
+body.theme-valentine {
+  --primary: #D4296B;
+  --primary-rgb: 212, 41, 107;
+  --secondary: #FF6B9D;
+  --accent: #FFD700;
+  --accent-rgb: 255, 215, 0;
+  --bg-dark: #0D0208;
+  --bg-medium: #1A0512;
+  --bg-light: #2D0820;
+  --text-light: #FFF5F8;
+  --text-dim: rgba(255, 245, 248, 0.65);
+  --text-muted: rgba(255, 245, 248, 0.35);
+  --particle-color: #FF6B9D;
+  --font-display: 'Playfair Display', serif;
+  --theme-gradient: linear-gradient(135deg, #0D0208 0%, #1A0512 40%, #2D0820 100%);
+  --glow-color: rgba(212, 41, 107, 0.4);
+  --card-border: rgba(212, 41, 107, 0.2);
+  background: #0D0208;
+}
+
+/* ---- Mothers Day ---- */
+body.theme-mothers {
+  --primary: #B565CC;
+  --primary-rgb: 181, 101, 204;
+  --secondary: #E896F5;
+  --accent: #FFEAA7;
+  --accent-rgb: 255, 234, 167;
+  --bg-dark: #0C0410;
+  --bg-medium: #1A0A1F;
+  --bg-light: #250F2E;
+  --text-light: #FDF5FF;
+  --text-dim: rgba(253, 245, 255, 0.65);
+  --text-muted: rgba(253, 245, 255, 0.35);
+  --particle-color: #E896F5;
+  --font-display: 'Cormorant Garamond', serif;
+  --theme-gradient: linear-gradient(135deg, #0C0410 0%, #1A0A1F 40%, #250F2E 100%);
+  --glow-color: rgba(181, 101, 204, 0.4);
+  --card-border: rgba(181, 101, 204, 0.2);
+  background: #0C0410;
+}
+
+/* ---- Fathers Day ---- */
+body.theme-fathers {
+  --primary: #2E86C1;
+  --primary-rgb: 46, 134, 193;
+  --secondary: #5DADE2;
+  --accent: #D4A853;
+  --accent-rgb: 212, 168, 83;
+  --bg-dark: #040A14;
+  --bg-medium: #071525;
+  --bg-light: #0D2340;
+  --text-light: #F0F8FF;
+  --text-dim: rgba(240, 248, 255, 0.65);
+  --text-muted: rgba(240, 248, 255, 0.35);
+  --particle-color: #5DADE2;
+  --font-display: 'Raleway', sans-serif;
+  --theme-gradient: linear-gradient(135deg, #040A14 0%, #071525 40%, #0D2340 100%);
+  --glow-color: rgba(46, 134, 193, 0.4);
+  --card-border: rgba(46, 134, 193, 0.2);
+  background: #040A14;
+}
+
+/* ---- Birthday ---- */
+body.theme-birthday {
+  --primary: #7D3C98;
+  --primary-rgb: 125, 60, 152;
+  --secondary: #AF7AC5;
+  --accent: #F1C40F;
+  --accent-rgb: 241, 196, 15;
+  --bg-dark: #08040E;
+  --bg-medium: #120820;
+  --bg-light: #1E0D35;
+  --text-light: #FAF5FF;
+  --text-dim: rgba(250, 245, 255, 0.65);
+  --text-muted: rgba(250, 245, 255, 0.35);
+  --particle-color: #AF7AC5;
+  --font-display: 'Cinzel', serif;
+  --theme-gradient: linear-gradient(135deg, #08040E 0%, #120820 40%, #1E0D35 100%);
+  --glow-color: rgba(125, 60, 152, 0.4);
+  --card-border: rgba(125, 60, 152, 0.2);
+  background: #08040E;
+}
+
+/* ---- Custom ---- */
+body.theme-custom {
+  --primary: #5C4AE4;
+  --primary-rgb: 92, 74, 228;
+  --secondary: #8B7CF8;
+  --accent: #FFD166;
+  --accent-rgb: 255, 209, 102;
+  --bg-dark: #060610;
+  --bg-medium: #0E0E28;
+  --bg-light: #151540;
+  --text-light: #F5F4FF;
+  --text-dim: rgba(245, 244, 255, 0.65);
+  --text-muted: rgba(245, 244, 255, 0.35);
+  --particle-color: #8B7CF8;
+  --font-display: 'Inter', sans-serif;
+  --theme-gradient: linear-gradient(135deg, #060610 0%, #0E0E28 40%, #151540 100%);
+  --glow-color: rgba(92, 74, 228, 0.4);
+  --card-border: rgba(92, 74, 228, 0.2);
+  background: #060610;
+}
+
+/* ---- Occasion Card Backgrounds in Editor ---- */
+.valentine-bg {
+  background: linear-gradient(135deg, #D4296B, #FF6B9D, #FFD700);
+}
+
+.mothers-bg {
+  background: linear-gradient(135deg, #B565CC, #E896F5, #FFEAA7);
+}
+
+.fathers-bg {
+  background: linear-gradient(135deg, #2E86C1, #5DADE2, #D4A853);
+}
+
+.birthday-bg {
+  background: linear-gradient(135deg, #7D3C98, #AF7AC5, #F1C40F);
+}
+
+.custom-bg {
+  background: linear-gradient(135deg, #5C4AE4, #8B7CF8, #FFD166);
+}
+
+/* ---- Ambient Glow Orbs (used in hero / viewer) ---- */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.orb-primary {
+  background: rgba(var(--primary-rgb), 0.25);
+}
+
+.orb-secondary {
+  background: rgba(var(--primary-rgb), 0.15);
+  animation-delay: -3s;
+  animation-duration: 8s;
+}
+
+.orb-accent {
+  background: rgba(var(--accent-rgb, 255, 215, 0), 0.12);
+  animation-delay: -1.5s;
+  animation-duration: 10s;
+}

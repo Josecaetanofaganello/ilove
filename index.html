@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homenagem — Crie Momentos Inesquecíveis</title>
+  <meta name="description" content="Crie homenagens cinematográficas para datas especiais. Personalize com fotos, textos e música para surpreender quem você ama.">
+  <meta property="og:title" content="Homenagem — Crie Momentos Inesquecíveis">
+  <meta property="og:description" content="Transforme memórias em momentos eternos com uma experiência como um filme interativo.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Raleway:wght@300;400;600;700&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- LZString -->
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/editor.css">
+</head>
+<body class="theme-valentine">
+
+  <!-- Particle Canvas -->
+  <canvas id="particleCanvas" class="particle-canvas"></canvas>
+
+  <!-- Header -->
+  <header class="site-header" id="siteHeader">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">💕</span>
+      <span class="logo-text">Homenagem</span>
+    </a>
+    <a href="#create" class="btn-nav">Criar Homenagem</a>
+  </header>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="hero">
+    <!-- Background gradient -->
+    <div class="hero-bg-gradient" id="heroBg"></div>
+
+    <!-- Ambient orbs -->
+    <div class="orb orb-primary" style="width:600px;height:600px;top:-15%;left:-15%;z-index:0;"></div>
+    <div class="orb orb-secondary" style="width:500px;height:500px;bottom:-10%;right:-10%;animation-delay:-4s;z-index:0;"></div>
+    <div class="orb orb-accent" style="width:350px;height:350px;top:40%;left:30%;animation-delay:-2s;z-index:0;"></div>
+
+    <!-- Content -->
+    <div class="hero-content" style="position:relative;z-index:2;">
+      <div class="hero-badge">✨ Experiência Cinematográfica</div>
+      <h1 class="hero-title">
+        Transforme <em>memórias</em><br>
+        em <em>momentos eternos</em>
+      </h1>
+      <p class="hero-subtitle">
+        Crie uma homenagem que ela jamais esquecerá. Fotos, histórias e amor
+        em uma experiência como um filme interativo.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary" id="startCreating">
+          <span>Criar Minha Homenagem</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <a href="#how-it-works" class="btn-ghost">Como funciona</a>
+      </div>
+      <div class="hero-occasions">
+        <span class="occasion-tag">💕 Namorados</span>
+        <span class="occasion-tag">🌸 Mães</span>
+        <span class="occasion-tag">⭐ Pais</span>
+        <span class="occasion-tag">🎂 Aniversário</span>
+        <span class="occasion-tag">✨ Qualquer data</span>
+      </div>
+    </div>
+
+    <!-- Phone Mockup -->
+    <div class="hero-preview" style="position:relative;z-index:2;">
+      <div class="phone-mockup">
+        <div class="phone-screen" id="phoneScreen">
+          <div class="phone-scene-preview">
+            <div class="preview-hearts" id="previewEmoji">💕</div>
+            <div class="preview-text" style="font-family:var(--font-display);font-size:1.4rem;font-style:italic;color:var(--text-light);text-shadow:0 0 20px rgba(212,41,107,.5);">
+              Nossa História
+            </div>
+            <div style="margin-top:.5rem;font-size:.75rem;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;">
+              Role para explorar ↓
+            </div>
+          </div>
+          <!-- Mini particle canvas on phone -->
+          <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:40px;">
+            <div style="position:absolute;top:20%;left:10%;font-size:1.2rem;animation:float 3s ease-in-out infinite;opacity:.6;">💕</div>
+            <div style="position:absolute;top:60%;right:8%;font-size:1rem;animation:float 4s 1s ease-in-out infinite;opacity:.4;">❤️</div>
+            <div style="position:absolute;bottom:25%;left:20%;font-size:.9rem;animation:float 3.5s 2s ease-in-out infinite;opacity:.5;">✨</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side labels -->
+      <div style="position:absolute;right:-160px;top:30%;display:flex;flex-direction:column;gap:1.5rem;">
+        <div style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
+          📸 Fotos personalizadas
+        </div>
+        <div style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
+          🎵 Música de fundo
+        </div>
+        <div style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
+          💌 Link para compartilhar
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <section class="how-it-works" id="how-it-works" style="position:relative;z-index:2;">
+    <div class="container">
+      <h2 class="section-title">Como Funciona</h2>
+      <p class="section-subtitle">Em menos de 5 minutos, crie uma experiência que ela jamais esquecerá</p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <span class="step-icon">🎨</span>
+          <h3>Escolha o Tema</h3>
+          <p>Selecione a data comemorativa e a identidade visual se adapta automaticamente</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <span class="step-icon">📸</span>
+          <h3>Adicione as Fotos</h3>
+          <p>Faça upload de até 8 fotos especiais — cada uma vira uma cena da história</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <span class="step-icon">📖</span>
+          <h3>Conte a História</h3>
+          <p>Adicione textos para cada memória e uma mensagem especial para o final</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <span class="step-icon">💌</span>
+          <h3>Compartilhe</h3>
+          <p>Gere o link e envie — quem receber vai viver uma experiência cinematográfica</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ EDITOR ═══ -->
+  <section class="editor-section" id="create" style="position:relative;z-index:2;">
+    <div class="editor-container">
+
+      <!-- Progress Bar -->
+      <div class="progress-bar-container">
+        <div class="progress-steps">
+          <div class="progress-step active" data-step="1">
+            <div class="step-dot">1</div>
+            <span>Ocasião</span>
+          </div>
+          <div class="progress-line"></div>
+          <div class="progress-step" data-step="2">
+            <div class="step-dot">2</div>
+            <span>Detalhes</span>
+          </div>
+          <div class="progress-line"></div>
+          <div class="progress-step" data-step="3">
+            <div class="step-dot">3</div>
+            <span>Fotos</span>
+          </div>
+          <div class="progress-line"></div>
+          <div class="progress-step" data-step="4">
+            <div class="step-dot">4</div>
+            <span>Histórias</span>
+          </div>
+          <div class="progress-line"></div>
+          <div class="progress-step" data-step="5">
+            <div class="step-dot">5</div>
+            <span>Finalizar</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 1: Occasion ── -->
+      <div class="editor-step active" id="step-1">
+        <h2 class="step-title">Qual é a ocasião? ✨</h2>
+        <p class="step-subtitle">Escolha o tema — cores, fontes e partículas se adaptam automaticamente</p>
+        <div class="occasion-grid">
+          <div class="occasion-card active" data-theme="valentine">
+            <div class="occasion-bg valentine-bg"></div>
+            <span class="occasion-icon">💕</span>
+            <h3>Dia dos Namorados</h3>
+            <p>Para celebrar o amor</p>
+          </div>
+          <div class="occasion-card" data-theme="mothers">
+            <div class="occasion-bg mothers-bg"></div>
+            <span class="occasion-icon">🌸</span>
+            <h3>Dia das Mães</h3>
+            <p>Para honrar quem nos criou</p>
+          </div>
+          <div class="occasion-card" data-theme="fathers">
+            <div class="occasion-bg fathers-bg"></div>
+            <span class="occasion-icon">⭐</span>
+            <h3>Dia dos Pais</h3>
+            <p>Para os maiores heróis</p>
+          </div>
+          <div class="occasion-card" data-theme="birthday">
+            <div class="occasion-bg birthday-bg"></div>
+            <span class="occasion-icon">🎂</span>
+            <h3>Aniversário</h3>
+            <p>Para tornar o dia especial</p>
+          </div>
+          <div class="occasion-card" data-theme="custom">
+            <div class="occasion-bg custom-bg"></div>
+            <span class="occasion-icon">✨</span>
+            <h3>Personalizado</h3>
+            <p>Qualquer data especial</p>
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn-next" id="step1Next">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ── Step 2: Personalize ── -->
+      <div class="editor-step" id="step-2">
+        <h2 class="step-title">Personalize a homenagem 💝</h2>
+        <p class="step-subtitle">Essas informações aparecerão na experiência cinematográfica</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="recipientName">Para quem é? *</label>
+            <input type="text" id="recipientName" placeholder="Maria, Mamãe, Amor..." class="form-input" maxlength="40">
+          </div>
+          <div class="form-group">
+            <label for="senderName">Quem está enviando?</label>
+            <input type="text" id="senderName" placeholder="Seu nome..." class="form-input" maxlength="40">
+          </div>
+          <div class="form-group full-width">
+            <label for="specialDate">Data especial</label>
+            <input type="text" id="specialDate" placeholder="Ex: 14 de Fevereiro de 2025" class="form-input" maxlength="50">
+          </div>
+          <div class="form-group full-width">
+            <label for="openingMessage">Mensagem de abertura</label>
+            <textarea id="openingMessage" placeholder="Essa mensagem aparecerá na primeira cena, como uma introdução à história de vocês..." class="form-textarea" rows="3" maxlength="300"></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label for="closingMessage">Mensagem final ❤️ (a mais especial!)</label>
+            <textarea id="closingMessage" placeholder="Essa será a mensagem da cena final — o clímax da experiência. Seja profundo e emocionante!" class="form-textarea" rows="3" maxlength="300"></textarea>
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" id="step2Back">← Voltar</button>
+          <button class="btn-next" id="step2Next">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ── Step 3: Photos ── -->
+      <div class="editor-step" id="step-3">
+        <h2 class="step-title">Adicione as fotos 📸</h2>
+        <p class="step-subtitle">Até 8 fotos. Cada uma será uma cena da história. Arraste para reordenar.</p>
+        <div class="upload-zone" id="uploadZone">
+          <span class="upload-icon">📷</span>
+          <h3>Arraste suas fotos aqui</h3>
+          <p>ou clique para selecionar</p>
+          <p class="upload-hint">JPG, PNG, WEBP • Até 8 fotos</p>
+          <input type="file" id="photoInput" multiple accept="image/*" class="file-input">
+        </div>
+        <div class="photos-grid" id="photosGrid"></div>
+        <div class="step-nav">
+          <button class="btn-back" id="step3Back">← Voltar</button>
+          <button class="btn-next" id="step3Next">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ── Step 4: Stories ── -->
+      <div class="editor-step" id="step-4">
+        <h2 class="step-title">Conte as histórias 📖</h2>
+        <p class="step-subtitle">Adicione um texto para cada foto — esses momentos ganharão vida na experiência</p>
+        <div class="stories-container" id="storiesContainer"></div>
+        <div class="step-nav">
+          <button class="btn-back" id="step4Back">← Voltar</button>
+          <button class="btn-next" id="step4Next">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ── Step 5: Finalize ── -->
+      <div class="editor-step" id="step-5">
+        <h2 class="step-title">Toque final 🎵</h2>
+        <p class="step-subtitle">Adicione a trilha sonora e gere o link da sua homenagem</p>
+
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label for="youtubeUrl">Link da música no YouTube (opcional)</label>
+          <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." class="form-input">
+          <small class="form-hint">🎵 A música tocará suavemente durante toda a experiência</small>
+        </div>
+
+        <div style="padding:1.25rem;background:rgba(255,255,255,.03);border:1px solid var(--border-subtle);border-radius:16px;margin-bottom:1.5rem;">
+          <h4 style="font-family:var(--font-display);font-size:1rem;color:var(--text-light);margin-bottom:.75rem;font-style:italic;">📋 Resumo da sua homenagem</h4>
+          <div id="tributeSummary" style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;color:var(--text-dim);">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+
+        <div class="finalize-actions">
+          <button class="btn-preview" id="previewBtn">👁️ Pré-visualizar</button>
+          <button class="btn-generate" id="generateBtn">🔗 Gerar Link da Homenagem</button>
+        </div>
+
+        <div class="generated-link-container" id="generatedLinkContainer" style="display:none">
+          <h3>✅ Homenagem criada com sucesso!</h3>
+          <div class="link-box">
+            <input type="text" id="generatedLink" readonly class="link-input">
+            <button class="btn-copy" id="copyBtn">Copiar</button>
+          </div>
+          <p class="share-hint">💌 Envie este link para <strong id="recipientNameDisplay"></strong> e surpreenda!</p>
+          <a id="openViewerBtn" target="_blank" class="btn-open-viewer">Abrir Experiência →</a>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" id="step5Back">← Voltar</button>
+        </div>
+      </div>
+
+    </div><!-- /.editor-container -->
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>Feito com <span class="heart">❤️</span> para celebrar os momentos que importam</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/themes.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/encoder.js"></script>
+  <script src="js/editor.js"></script>
+
+  <script>
+    // Update tribute summary on step 5
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new MutationObserver(() => {
+        const step5 = document.getElementById('step-5');
+        if (step5 && step5.classList.contains('active')) {
+          updateSummary();
+        }
+      });
+      observer.observe(document.getElementById('step-5'), { attributes: true, attributeFilter: ['class'] });
+    });
+
+    function updateSummary() {
+      const summary = document.getElementById('tributeSummary');
+      if (!summary) return;
+      const fields = [
+        ['🎨 Tema', document.getElementById('recipientName')?.closest('section')?.querySelector('.occasion-card.active h3')?.textContent || '—'],
+        ['💝 Para', document.getElementById('recipientName')?.value || '—'],
+        ['✍️ De', document.getElementById('senderName')?.value || '—'],
+        ['📅 Data', document.getElementById('specialDate')?.value || '—'],
+      ];
+      summary.innerHTML = fields.map(([k, v]) =>
+        `<div><span style="color:var(--secondary);font-weight:600;">${k}:</span> ${v || '—'}</div>`
+      ).join('');
+    }
+  </script>
+</body>
+</html>
