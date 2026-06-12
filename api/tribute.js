@@ -67,7 +67,20 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    // 2. Carregar homenagem (padrão)
+    // 2. Checar status de pagamento (Polling do Frontend)
+    if (action === 'status') {
+      try {
+        const key = `tributes/${id}.json`;
+        const command = new GetObjectCommand({ Bucket: BUCKET_NAME, Key: key });
+        const response = await s3Client.send(command);
+        const data = JSON.parse(await streamToString(response.Body));
+        return res.status(200).json({ paymentStatus: data.paymentStatus || 'pending' });
+      } catch (error) {
+        return res.status(200).json({ paymentStatus: 'pending' }); // Fail-safe
+      }
+    }
+
+    // 3. Carregar homenagem (padrão)
     if (!id) {
       return res.status(400).json({ error: 'ID não fornecido' });
     }

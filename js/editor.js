@@ -388,50 +388,127 @@
       }
     });
 
-    document.getElementById('generateBtn')?.addEventListener('click', async () => {
+    let tributeId = null;
+
+    document.getElementById('generateBtn')?.addEventListener('click', () => {
       collectStep2();
       collectStories();
       state.youtubeUrl = document.getElementById('youtubeUrl')?.value.trim() || '';
 
-      const btn = document.getElementById('generateBtn');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '⏳ Salvando homenagem...';
+      if (state.photos.length === 0) {
+        showToast('Adicione pelo menos 1 foto para gerar!');
+        return;
+      }
+
+      // Show Payment Modal
+      const modal = document.getElementById('paymentModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('paymentForm').style.display = 'block';
+        document.getElementById('pixContainer').style.display = 'none';
+        document.getElementById('waitingContainer').style.display = 'none';
+      }
+    });
+
+    document.getElementById('generatePixBtn')?.addEventListener('click', async () => {
+      const name = document.getElementById('payName').value.trim();
+      const phone = document.getElementById('payPhone').value.trim();
+
+      if (!name) {
+        showToast('Por favor, informe seu nome!');
+        return;
+      }
+
+      const btn = document.getElementById('generatePixBtn');
+      btn.textContent = 'Gerando PIX...';
       btn.disabled = true;
 
       try {
-        const url = await Encoder.saveAndGetUrl(buildTributeData());
-        showGeneratedLink(url);
-        showToast('🎉 Homenagem salva com sucesso!');
-      } catch (e) {
-        console.warn('API falhou, usando URL longa como fallback:', e);
-        const fallbackUrl = Encoder.generateViewerUrl(buildTributeData());
-        if (fallbackUrl) {
-          showGeneratedLink(fallbackUrl);
-          showToast('⚠️ Salvo com link longo (Credenciais da AWS não configuradas).');
+        // Salva a homenagem no S3 e pega o ID
+        const urlObj = await Encoder.saveAndGetUrl(buildTributeData());
+        // Extract ID from urlObj
+        tributeId = new URL(urlObj).searchParams.get('id');
+
+        // Notifica o Telegram via API e marca status pendente
+        const res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: tributeId, customerName: name, customerPhone: phone })
+        });
+        
+        if (!res.ok) throw new Error('Falha ao iniciar checkout.');
+
+        // O valor é sempre 20.00. CPF: 01385988002
+        // Gerar payload estático do PIX (Simplificado sem libs pesadas)
+        // Usamos uma API gratuita para gerar BR Code válido ou código pré-formatado (neste caso formataremos manualmente)
+        const pixKey = "01385988002";
+        const pixPayload = `00020126330014br.gov.bcb.pix0111${pixKey}520400005303986540520.005802BR5915Jose Faganello6009SAO PAULO62070503***6304`;
+        // Calculo de CRC16 seria necessário, mas para contornar a falta do CRC na web sem libs, 
+        // vamos bater em uma API pública e gratuita que gera o código PIX Copia e Cola.
+        // O ideal é que o dono do site crie no app do banco um "PIX Cobrança" de R$ 20.00 e coloque aqui.
+        // Como ele não enviou, vamos simular que ele preencheu:
+        
+        // --- INÍCIO GERAÇÃO PIX ---
+        // Aqui estamos usando a API gerador-pix para gerar o payload real.
+        const pixApiUrl = `https://gerarqrcodepix.com.br/api/v1?nome=Jose&cidade=SAO PAULO&chave=${pixKey}&valor=20.00&saida=brcode`;
+        const brCodeRes = await fetch(pixApiUrl);
+        let brCode = '';
+        if (brCodeRes.ok) {
+           const json = await brCodeRes.json();
+           brCode = json.brcode;
         } else {
-          showToast('❌ Erro ao salvar: ' + e.message);
+           brCode = 'Erro ao gerar Pix. Chave: 01385988002'; // Fallback
         }
-      } finally {
-        btn.innerHTML = originalText;
+        
+        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brCode)}`;
+
+        document.getElementById('pixQrCode').src = qrCodeUrl;
+        document.getElementById('pixCodeInput').value = brCode;
+
+        document.getElementById('paymentForm').style.display = 'none';
+        document.getElementById('pixContainer').style.display = 'block';
+
+      } catch (e) {
+        showToast('Erro ao iniciar pagamento: ' + e.message);
+        btn.textContent = 'Tentar Novamente';
         btn.disabled = false;
       }
     });
 
-    document.getElementById('copyBtn')?.addEventListener('click', () => {
-      const input = document.getElementById('generatedLink');
-      if (input) {
-        navigator.clipboard.writeText(input.value).then(() => {
-          const btn = document.getElementById('copyBtn');
-          btn.textContent = '✓ Copiado!';
-          btn.classList.add('copied');
-          setTimeout(() => {
-            btn.textContent = 'Copiar';
-            btn.classList.remove('copied');
-          }, 2500);
-        });
-      }
+    document.getElementById('copyPixBtn')?.addEventListener('click', () => {
+      const input = document.getElementById('pixCodeInput');
+      navigator.clipboard.writeText(input.value).then(() => {
+        showToast('Código PIX copiado!');
+      });
     });
-  }
+
+    document.getElementById('confirmPaymentBtn')?.addEventListener('click', () => {
+      document.getElementById('pixContainer').style.display = 'none';
+      document.getElementById('waitingContainer').style.display = 'block';
+      
+      startStatusPolling();
+    });
+
+    function startStatusPolling() {
+      if (!tributeId) return;
+      
+      const interval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/tribute?action=status&id=${tributeId}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.paymentStatus === 'approved') {
+              clearInterval(interval);
+              document.getElementById('paymentModal').style.display = 'none';
+              const finalUrl = `${window.location.origin}/view.html?id=${tributeId}`;
+              showGeneratedLink(finalUrl);
+            }
+          }
+        } catch (e) {
+          console.error('Polling error', e);
+        }
+      }, 3000); // Polling a cada 3 segundos
+    }
 
   function buildTributeData() {
     return {
