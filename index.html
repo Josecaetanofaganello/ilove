@@ -31,7 +31,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VGRKDPFVF4"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
 
     gtag('config', 'G-VGRKDPFVF4');
@@ -46,8 +46,7 @@
   <!-- Header -->
   <header class="site-header" id="siteHeader">
     <a href="#" class="logo">
-      <span class="logo-icon">💕</span>
-      <span class="logo-text">Homenagem</span>
+      <img src="assets/ilove-logo.png" alt="iLove Logo" style="height: 80px; width: auto; object-fit: contain;">
     </a>
     <a href="#create" class="btn-nav">Criar Homenagem</a>
   </header>
@@ -64,7 +63,8 @@
     <div class="orb orb-accent" style="width:350px;height:350px;top:40%;left:30%;animation-delay:-2s;z-index:0;"></div>
 
     <!-- Giant Background Logo -->
-    <img src="assets/ilove-logo.png" alt="" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:90vw; max-width:900px; opacity:0.04; z-index:0; pointer-events:none;">
+    <img src="assets/ilove-logo.png" alt=""
+      style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:90vw; max-width:900px; opacity:0.04; z-index:0; pointer-events:none;">
 
     <!-- Content -->
     <div class="hero-content" style="position:relative;z-index:2;">
@@ -273,7 +273,9 @@
           <div class="form-group full-width">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
               <label for="openingMessage" style="margin-bottom:0;">Mensagem de abertura</label>
-              <button id="btnSuggestOpening" class="btn-primary" type="button" style="background:transparent; border:1px solid var(--primary); padding:0.3rem 0.6rem; font-size:0.75rem; color:var(--text-light); height:auto; width:auto; line-height:1;">✨ Sugerir Frase</button>
+              <button id="btnSuggestOpening" class="btn-primary" type="button"
+                style="background:transparent; border:1px solid var(--primary); padding:0.3rem 0.6rem; font-size:0.75rem; color:var(--text-light); height:auto; width:auto; line-height:1;">✨
+                Sugerir Frase</button>
             </div>
             <textarea id="openingMessage"
               placeholder="Essa mensagem aparecerá na primeira cena, como uma introdução à história de vocês..."
@@ -282,7 +284,9 @@
           <div class="form-group full-width">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
               <label for="closingMessage" style="margin-bottom:0;">Mensagem final ❤️</label>
-              <button id="btnSuggestClosing" class="btn-primary" type="button" style="background:transparent; border:1px solid var(--primary); padding:0.3rem 0.6rem; font-size:0.75rem; color:var(--text-light); height:auto; width:auto; line-height:1;">✨ Sugerir Frase</button>
+              <button id="btnSuggestClosing" class="btn-primary" type="button"
+                style="background:transparent; border:1px solid var(--primary); padding:0.3rem 0.6rem; font-size:0.75rem; color:var(--text-light); height:auto; width:auto; line-height:1;">✨
+                Sugerir Frase</button>
             </div>
             <textarea id="closingMessage"
               placeholder="Essa será a mensagem da cena final — o clímax da experiência. Seja profundo e emocionante!"
@@ -391,15 +395,22 @@
       </p>
 
       <div id="paymentForm">
-        <input type="text" id="payName" class="form-input" placeholder="Seu Nome" style="margin-bottom:1rem; text-align:center;">
-        <input type="text" id="payPhone" class="form-input" placeholder="Seu WhatsApp ou E-mail" style="margin-bottom:0.5rem; text-align:center;">
-        
-        <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-bottom:1.5rem; line-height:1.4;">
-          🔒 <strong>Privacidade Garantida:</strong> Seus dados de contato não serão armazenados em nosso banco de dados. Eles serão utilizados única e exclusivamente para processar o seu pagamento e enviar o link final.
+        <input type="text" id="payName" class="form-input" placeholder="Seu Nome"
+          style="margin-bottom:1rem; text-align:center;">
+        <input type="text" id="payPhone" class="form-input" placeholder="Seu WhatsApp ou E-mail"
+          style="margin-bottom:0.5rem; text-align:center;">
+
+        <p
+          style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-bottom:1.5rem; line-height:1.4;">
+          🔒 <strong>Privacidade Garantida:</strong> Seus dados de contato não serão armazenados em nosso banco de
+          dados. Eles serão utilizados única e exclusivamente para processar o seu pagamento e enviar o link final.
         </p>
 
-        <button id="generatePixBtn" class="btn-primary" style="width:100%; font-size:1rem; margin-bottom:1rem;">Gerar PIX de R$ 20,00</button>
-        <button id="viewDemoBtn" class="btn-primary" style="width:100%; font-size:1rem; background:transparent; border:2px solid var(--primary); color:var(--text-light);">👀 Ver Demo (Marca d'água)</button>
+        <button id="generatePixBtn" class="btn-primary" style="width:100%; font-size:1rem; margin-bottom:1rem;">Gerar
+          PIX de R$ 20,00</button>
+        <button id="viewDemoBtn" class="btn-primary"
+          style="width:100%; font-size:1rem; background:transparent; border:2px solid var(--primary); color:var(--text-light);">👀
+          Ver Demo (Marca d'água)</button>
       </div>
 
       <div id="pixContainer" style="display:none;">
@@ -439,18 +450,23 @@
   <!-- Scripts -->
   <script src="js/themes.js"></script>
   <script src="js/particles.js"></script>
-  <div id="cookie-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:rgba(20,20,40,0.95); backdrop-filter:blur(10px); border-top:1px solid rgba(255,255,255,0.1); padding:1rem; z-index:99999; flex-direction:column; gap:1rem; align-items:center; text-align:center; font-family:'Inter',sans-serif;">
+  <div id="cookie-banner"
+    style="display:none; position:fixed; bottom:0; left:0; right:0; background:rgba(20,20,40,0.95); backdrop-filter:blur(10px); border-top:1px solid rgba(255,255,255,0.1); padding:1rem; z-index:99999; flex-direction:column; gap:1rem; align-items:center; text-align:center; font-family:'Inter',sans-serif;">
     <p style="color:var(--text-light); font-size:0.9rem; margin:0; line-height:1.4;">
-      🍪 Usamos cookies para melhorar sua experiência e analisar o tráfego do site. Ao continuar, você concorda com nossa política de privacidade.<br>
-      <a href="privacy.html" style="color:var(--primary); text-decoration:underline;">Clique aqui para ler e acessar nossos termos</a>
+      🍪 Usamos cookies para melhorar sua experiência e analisar o tráfego do site. Ao continuar, você concorda com
+      nossa política de privacidade.<br>
+      <a href="privacy.html" style="color:var(--primary); text-decoration:underline;">Clique aqui para ler e acessar
+        nossos termos</a>
     </p>
-    <button id="accept-cookies" class="btn-primary" style="padding:0.5rem 1.5rem; font-size:0.9rem; min-width:150px; background:white; color:black; border:none;">Entendi e Aceito</button>
+    <button id="accept-cookies" class="btn-primary"
+      style="padding:0.5rem 1.5rem; font-size:0.9rem; min-width:150px; background:white; color:black; border:none;">Entendi
+      e Aceito</button>
   </div>
   <script>
     if (!localStorage.getItem('cookiesAccepted')) {
       document.getElementById('cookie-banner').style.display = 'flex';
     }
-    document.getElementById('accept-cookies').addEventListener('click', function() {
+    document.getElementById('accept-cookies').addEventListener('click', function () {
       localStorage.setItem('cookiesAccepted', 'true');
       document.getElementById('cookie-banner').style.display = 'none';
     });
