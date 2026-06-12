@@ -438,27 +438,8 @@
         
         if (!res.ok) throw new Error('Falha ao iniciar checkout.');
 
-        // O valor é sempre 20.00. CPF: 01385988002
-        // Gerar payload estático do PIX (Simplificado sem libs pesadas)
-        // Usamos uma API gratuita para gerar BR Code válido ou código pré-formatado (neste caso formataremos manualmente)
-        const pixKey = "01385988002";
-        const pixPayload = `00020126330014br.gov.bcb.pix0111${pixKey}520400005303986540520.005802BR5915Jose Faganello6009SAO PAULO62070503***6304`;
-        // Calculo de CRC16 seria necessário, mas para contornar a falta do CRC na web sem libs, 
-        // vamos bater em uma API pública e gratuita que gera o código PIX Copia e Cola.
-        // O ideal é que o dono do site crie no app do banco um "PIX Cobrança" de R$ 20.00 e coloque aqui.
-        // Como ele não enviou, vamos simular que ele preencheu:
-        
-        // --- INÍCIO GERAÇÃO PIX ---
-        // Aqui estamos usando a API gerador-pix para gerar o payload real.
-        const pixApiUrl = `https://gerarqrcodepix.com.br/api/v1?nome=Jose&cidade=SAO PAULO&chave=${pixKey}&valor=20.00&saida=brcode`;
-        const brCodeRes = await fetch(pixApiUrl);
-        let brCode = '';
-        if (brCodeRes.ok) {
-           const json = await brCodeRes.json();
-           brCode = json.brcode;
-        } else {
-           brCode = 'Erro ao gerar Pix. Chave: 01385988002'; // Fallback
-        }
+        const checkoutData = await res.json();
+        const brCode = checkoutData.brCode || 'Erro ao gerar Pix. Chave: 01385988002';
         
         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brCode)}`;
 

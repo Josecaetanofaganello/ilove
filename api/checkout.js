@@ -77,9 +77,24 @@ module.exports = async function handler(req, res) {
           }
         })
       });
+    // 3. Gerar código PIX (Bypass CORS fazendo no backend)
+    const pixKey = "01385988002";
+    const pixApiUrl = `https://gerarqrcodepix.com.br/api/v1?nome=Jose&cidade=SAO PAULO&chave=${pixKey}&valor=20.00&saida=brcode`;
+    
+    let brCode = '';
+    try {
+      const brCodeRes = await fetch(pixApiUrl);
+      if (brCodeRes.ok) {
+        const json = await brCodeRes.json();
+        brCode = json.brcode;
+      } else {
+        brCode = 'Erro ao gerar Pix. Chave: 01385988002';
+      }
+    } catch (e) {
+      brCode = 'Erro ao gerar Pix. Chave: 01385988002';
     }
 
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, brCode });
   } catch (error) {
     console.error('Checkout error:', error);
     return res.status(500).json({ error: error.message });
