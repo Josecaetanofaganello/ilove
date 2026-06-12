@@ -43,6 +43,13 @@
   background-clip: text;
 }
 
+.header-logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  max-width: 45vw; /* Prevents logo from pushing the button off-screen on mobile */
+}
+
 .btn-nav {
   padding: 0.6rem 1.5rem;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
