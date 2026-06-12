@@ -89,7 +89,7 @@
     
     // Add a top banner
     const banner = document.createElement('div');
-    banner.innerHTML = '⚠️ MODO DE PRÉ-VISUALIZAÇÃO — O LINK FINAL NÃO TERÁ ESSA MARCA D\\'ÁGUA';
+    banner.innerHTML = "⚠️ MODO DE PRÉ-VISUALIZAÇÃO — O LINK FINAL NÃO TERÁ ESSA MARCA D'ÁGUA";
     banner.style.cssText = `
       position: fixed; top: 0; left: 0; right: 0;
       background: #D4296B; color: #fff; text-align: center;
