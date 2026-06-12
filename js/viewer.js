@@ -365,24 +365,9 @@
             ${tributeData.senderName ? `— ${tributeData.senderName}` : ''}
             ${tributeData.specialDate ? ` · ${tributeData.specialDate}` : ''}
           </div>
-        </div>
-      </div>
-    `;
-
-    // ── CTA Scene ──
-    html += `
-      <div class="scene-cta" id="scene-cta" data-scene="${finalIdx + 1}">
-        <div class="cta-content">
-          <h2 class="cta-title">Crie a sua homenagem ✨</h2>
-          <p class="cta-subtitle">
-            Surpreenda quem você ama com uma experiência cinematográfica única.
-            Personalize com fotos, histórias e a trilha sonora perfeita.
-          </p>
-          <a href="index.html" class="btn-primary" style="font-size:1rem;">
-            <span>Criar Minha Homenagem</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <div class="cta-credit">Feito com ${t.icon} para celebrar os momentos que importam</div>
+          <button onclick="navigator.share ? navigator.share({title: document.title, url: window.location.href}) : navigator.clipboard.writeText(window.location.href).then(()=>alert('Link copiado!'))" style="margin-top: 2rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.8rem 1.5rem; border-radius: 50px; font-family: 'Inter', sans-serif; cursor: pointer; backdrop-filter: blur(10px); transition: 0.3s; z-index: 10;">
+            🔗 Compartilhar Homenagem
+          </button>
         </div>
       </div>
     `;
@@ -435,13 +420,13 @@
       });
     }, options);
 
-    document.querySelectorAll('.scene, .scene-cta').forEach(s => observer.observe(s));
+    document.querySelectorAll('.scene').forEach(s => observer.observe(s));
   }
 
   /* ── Progress Dots ── */
   function buildProgressDots() {
     const d = tributeData;
-    const count = (d.photos?.length || 0) + 2; // opening + photos + final
+    const count = (d.photos?.length || 0) + 1; // opening + photos + final
     const container = document.createElement('div');
     container.className = 'scene-progress';
     container.id = 'sceneProgress';
