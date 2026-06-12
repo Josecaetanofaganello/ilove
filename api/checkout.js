@@ -38,6 +38,11 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Faltam dados do cliente.' });
   }
 
+  // Proteção contra Path Traversal
+  if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
+    return res.status(400).json({ error: 'ID malformado ou inválido.' });
+  }
+
   try {
     // 1. Atualizar o arquivo no S3 com os dados do cliente e marcar como "pending"
     const key = `tributes/${id}.json`;

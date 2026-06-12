@@ -21,11 +21,26 @@ const streamToString = (stream) =>
     stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
   });
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 module.exports = async function handler(req, res) {
   const { id, token } = req.query;
 
   if (!id || !token) {
     return res.status(400).send('<h1>Erro: Parâmetros inválidos.</h1>');
+  }
+
+  // Proteção contra Path Traversal
+  if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
+    return res.status(400).send('<h1>Erro: ID malformado ou inválido.</h1>');
   }
 
   // Verifica se quem clicou foi o bot oficial usando o Token como senha
@@ -56,6 +71,7 @@ module.exports = async function handler(req, res) {
       : '#';
 
     // HTML Bonito de confirmação para o Admin
+    const safeCustomerName = escapeHtml(data.customerName || 'Cliente');
     const html = `
       <!DOCTYPE html>
       <html lang="pt-BR">
@@ -75,7 +91,7 @@ module.exports = async function handler(req, res) {
         <div class="box">
           <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
           <h1>Liberado com Sucesso!</h1>
-          <p>A tela do cliente (<b>${data.customerName || 'Cliente'}</b>) foi atualizada automaticamente neste exato segundo e o link da homenagem já está na mão dele!</p>
+          <p>A tela do cliente (<b>${safeCustomerName}</b>) foi atualizada automaticamente neste exato segundo e o link da homenagem já está na mão dele!</p>
           ${data.customerPhone ? `<a href="${whatsappLink}" class="btn">Chamar no WhatsApp</a>` : ''}
         </div>
       </body>
