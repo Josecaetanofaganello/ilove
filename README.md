@@ -2,59 +2,35 @@
 
 Site para criar homenagens cinematográficas para datas especiais (Dia dos Namorados, Mães, Pais, Aniversários, etc.).
 
-## 🚀 Deploy na Vercel
+## 🚀 Deploy na Vercel com AWS S3
 
-### Passo 1 — Criar conta no JSONBin.io (gratuito)
+Para garantir que não haverá limite de tamanho de fotos, o backend usa a Amazon AWS S3.
 
-1. Acesse **[jsonbin.io](https://jsonbin.io)** e crie uma conta gratuita
-2. No painel, vá em **API Keys** e copie sua chave de API (Master Key)
+### Passo 1 — Configurar AWS S3
 
-> O plano gratuito permite 10.000 requisições/mês e 100 bins — mais do que suficiente para começar.
+1. Acesse o [Console da AWS](https://aws.amazon.com/console/) e busque por **S3**.
+2. Clique em **Create bucket**. Escolha um nome (ex: `homenagem-bucket-xyz`) e uma região (ex: `us-east-1`).
+3. Vá no serviço **IAM** (Identity and Access Management).
+4. Em **Users**, clique em **Create user** (ex: `vercel-s3-user`).
+5. Em permissões, escolha **Attach policies directly** e selecione `AmazonS3FullAccess`.
+6. Após criar o usuário, abra-o, vá na aba **Security credentials**, e crie uma **Access key**.
+7. Guarde o `Access Key ID` e a `Secret Access Key`.
 
-### Passo 2 — Configurar a variável de ambiente na Vercel
+### Passo 2 — Configurar as Variáveis na Vercel
 
-1. No [dashboard da Vercel](https://vercel.com/dashboard), abra seu projeto
-2. Vá em **Settings → Environment Variables**
-3. Adicione:
-   - **Name**: `JSONBIN_API_KEY`
-   - **Value**: sua chave do JSONBin.io
-   - **Environment**: Production, Preview, Development
-4. Clique em **Save**
+1. No [dashboard da Vercel](https://vercel.com/dashboard), abra seu projeto.
+2. Vá em **Settings → Environment Variables** e adicione:
+   - `AWS_REGION` (a região do bucket, ex: `us-east-1`)
+   - `AWS_S3_BUCKET_NAME` (o nome do seu bucket)
+   - `AWS_ACCESS_KEY_ID` (a chave do IAM)
+   - `AWS_SECRET_ACCESS_KEY` (o segredo do IAM)
+3. Marque: Production, Preview e Development.
 
-### Passo 3 — Fazer redeploy
+### Passo 3 — Fazer Redeploy
 
-Após adicionar a env var, a Vercel precisa fazer um novo deploy:
+Após adicionar as variáveis, a Vercel precisa fazer um novo deploy para carregar a configuração. No painel da Vercel vá em Deployments e clique em **Redeploy**.
 
-```bash
-# Na pasta do projeto:
-git add .
-git commit -m "feat: backend serverless para links curtos"
-git push
-```
-
-A Vercel vai rebuildar automaticamente.
-
-### ✅ Resultado
-
-Agora os links gerados serão **curtos** como:
-```
-https://seu-site.vercel.app/view.html?id=64abc123def456
-```
-
----
-
-## 🛠️ Desenvolvimento Local
-
-Para testar localmente com a função serverless:
-
-```bash
-npm install
-npx vercel dev
-```
-
-Isso inicia um servidor local em `http://localhost:3000` com a function `/api/tribute` funcionando.
-
-> **Sem a variável `JSONBIN_API_KEY` no ambiente local**, o botão de preview cai automaticamente para o modo legado (link com hash — funciona localmente, não é ideal para compartilhamento).
+> **Nota Local**: Sem as variáveis AWS no ambiente local, o botão de preview gerará um link gigante e usará o modo legado (LZString hash).
 
 ---
 
@@ -65,7 +41,7 @@ Isso inicia um servidor local em `http://localhost:3000` com a function `/api/tr
 ├── index.html         # Editor de homenagens (wizard 5 passos)
 ├── view.html          # Experiência cinematográfica
 ├── api/
-│   └── tribute.js     # Serverless function (salva/carrega no JSONBin)
+│   └── tribute.js     # Serverless function (salva/carrega no AWS S3)
 ├── css/
 │   ├── main.css       # Design system
 │   ├── themes.css     # Temas por ocasião
@@ -74,7 +50,7 @@ Isso inicia um servidor local em `http://localhost:3000` com a function `/api/tr
 ├── js/
 │   ├── themes.js      # Definições de temas
 │   ├── particles.js   # Sistema de partículas canvas
-│   ├── encoder.js     # Salvar/carregar via API + compressão de imagens
+│   ├── encoder.js     # Salvar/carregar via API + fallback Hash URL
 │   ├── editor.js      # Lógica do wizard de criação
 │   └── viewer.js      # Engine cinematográfica
 └── package.json

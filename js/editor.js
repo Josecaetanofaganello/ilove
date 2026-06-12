@@ -369,11 +369,11 @@
         showGeneratedLink(url);
         showToast('🎉 Homenagem salva com sucesso!');
       } catch (e) {
-        console.warn('JSONBin falhou, usando URL longa como fallback:', e);
+        console.warn('API falhou, usando URL longa como fallback:', e);
         const fallbackUrl = Encoder.generateViewerUrl(buildTributeData());
         if (fallbackUrl) {
           showGeneratedLink(fallbackUrl);
-          showToast('⚠️ Salvo com link longo (limite de 100kb excedido no JSONBin).');
+          showToast('⚠️ Salvo com link longo (Credenciais da AWS não configuradas).');
         } else {
           showToast('❌ Erro ao salvar: ' + e.message);
         }

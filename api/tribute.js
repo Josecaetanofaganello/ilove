@@ -1,11 +1,31 @@
 // ============================================================
 // api/tribute.js — Vercel Serverless Function
-// Salva/recupera homenagens no JSONBin.io
-// Env var necessária: JSONBIN_API_KEY
+// Salva/recupera homenagens no AWS S3
 // ============================================================
 
-const JSONBIN_API_KEY = process.env.JSONBIN_API_KEY;
-const JSONBIN_URL = 'https://api.jsonbin.io/v3/b';
+const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const crypto = require("crypto");
+
+// ── AWS Configuration ──
+const REGION = process.env.AWS_REGION || "us-east-1";
+const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
+
+const s3Client = new S3Client({
+  region: REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
+// Helper para converter o ReadableStream do S3 para string
+const streamToString = (stream) =>
+  new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+  });
 
 module.exports = async function handler(req, res) {
   // ── CORS ──
@@ -17,33 +37,29 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
+  // ── Validação das Variáveis de Ambiente ──
+  if (!BUCKET_NAME || !process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+    return res.status(500).json({ error: 'Credenciais AWS não configuradas na Vercel.' });
+  }
+
   // ── POST — Salvar homenagem ──
   if (req.method === 'POST') {
-    if (!JSONBIN_API_KEY) {
-      return res.status(500).json({ error: 'JSONBIN_API_KEY não configurado. Veja o README.' });
-    }
-
     try {
-      const response = await fetch(JSONBIN_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': JSONBIN_API_KEY,
-          'X-Bin-Private': 'false',
-          'X-Bin-Name': `tribute_${Date.now()}`,
-        },
-        body: JSON.stringify(req.body),
+      const id = crypto.randomBytes(8).toString('hex'); // Gera ID aleatório curto
+      const key = `tributes/${id}.json`;
+
+      const command = new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+        Body: JSON.stringify(req.body),
+        ContentType: "application/json",
       });
 
-      const data = await response.json();
+      await s3Client.send(command);
 
-      if (!response.ok) {
-        throw new Error(data.message || `JSONBin error: ${response.status}`);
-      }
-
-      return res.status(200).json({ id: data.metadata.id });
+      return res.status(200).json({ id });
     } catch (error) {
-      console.error('Save error:', error);
+      console.error('Save error (S3):', error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -56,27 +72,26 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'ID não fornecido' });
     }
 
-    if (!JSONBIN_API_KEY) {
-      return res.status(500).json({ error: 'JSONBIN_API_KEY não configurado.' });
-    }
-
     try {
-      const response = await fetch(`${JSONBIN_URL}/${id}/latest`, {
-        headers: {
-          'X-Master-Key': JSONBIN_API_KEY,
-        },
+      const key = `tributes/${id}.json`;
+
+      const command = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
       });
 
-      const data = await response.json();
+      const response = await s3Client.send(command);
+      const dataString = await streamToString(response.Body);
+      const data = JSON.parse(dataString);
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Homenagem não encontrada');
-      }
-
-      return res.status(200).json(data.record);
+      return res.status(200).json(data);
     } catch (error) {
-      console.error('Load error:', error);
-      return res.status(404).json({ error: error.message });
+      console.error('Load error (S3):', error);
+      // Se não encontrou o arquivo, o erro é NoSuchKey
+      if (error.name === 'NoSuchKey') {
+        return res.status(404).json({ error: 'Homenagem não encontrada.' });
+      }
+      return res.status(500).json({ error: error.message });
     }
   }
 
