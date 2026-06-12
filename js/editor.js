@@ -407,8 +407,8 @@
       const name = document.getElementById('payName').value.trim();
       const phone = document.getElementById('payPhone').value.trim();
 
-      if (!name) {
-        showToast('Por favor, informe seu nome!');
+      if (!name || !phone) {
+        showToast('Por favor, informe seu nome e um WhatsApp/E-mail de contato!');
         return;
       }
 
