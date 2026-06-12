@@ -907,6 +907,9 @@
 @media (max-width: 640px) {
   .site-header { padding: 0.875rem 1.25rem; }
   .hero { padding: 5rem 1.25rem 2rem; }
+  .hero-content { align-items: center; text-align: center; }
+  .hero-title, .hero-subtitle { text-align: center; }
+  .hero-actions, .hero-occasions { justify-content: center; text-align: center; }
   .steps-grid { grid-template-columns: 1fr 1fr; }
   .occasion-grid { grid-template-columns: repeat(2, 1fr); }
   .form-grid { grid-template-columns: 1fr; }
