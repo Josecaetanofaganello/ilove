@@ -93,21 +93,32 @@
 
     async function handleFiles(files) {
       const remaining = 8 - state.photos.length;
-      const toProcess = files.filter(f => f.type.startsWith('image/')).slice(0, remaining);
+      const toProcess = files.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/')).slice(0, remaining);
 
       if (toProcess.length === 0) {
-        if (state.photos.length >= 8) showToast('Máximo de 8 fotos atingido!');
+        if (state.photos.length >= 8) showToast('Máximo de 8 mídias atingido!');
         return;
       }
 
-      showToast(`Processando ${toProcess.length} foto(s)...`);
-
       for (const file of toProcess) {
         try {
-          const src = await Encoder.compressImage(file, 700, 0.62);
-          state.photos.push({ src, story: '', caption: '' });
+          if (file.type.startsWith('video/')) {
+            if (file.size > 200 * 1024 * 1024) {
+              showToast(`Vídeo ${file.name} ignorado (maior que 200MB).`);
+              continue;
+            }
+            showToast(`Enviando vídeo ${file.name}... (isso pode demorar)`);
+            const videoUrl = await uploadVideoDirectly(file);
+            state.photos.push({ src: videoUrl, type: 'video', story: '', caption: '' });
+            showToast(`Vídeo ${file.name} enviado!`);
+          } else {
+            showToast(`Processando foto ${file.name}...`);
+            const src = await Encoder.compressImage(file, 700, 0.62);
+            state.photos.push({ src, type: 'image', story: '', caption: '' });
+          }
         } catch (e) {
-          console.error('Error compressing image:', e);
+          console.error('Error processing file:', e);
+          showToast(`Erro ao processar ${file.name}`);
         }
       }
 
@@ -115,17 +126,40 @@
       updatePhotoCounter();
     }
 
+    async function uploadVideoDirectly(file) {
+      // 1. Obter Presigned URL da API
+      const res = await fetch(`${Encoder.apiBase}?action=upload&filename=${encodeURIComponent(file.name)}&filetype=${encodeURIComponent(file.type)}`);
+      if (!res.ok) throw new Error('Falha ao obter link de upload.');
+      const { uploadUrl, publicUrl } = await res.json();
+
+      // 2. Fazer PUT direto no S3
+      const putRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file
+      });
+      
+      if (!putRes.ok) throw new Error('Falha no upload para o S3.');
+      return publicUrl;
+    }
+
     function renderPhotoGrid() {
       grid.innerHTML = '';
 
-      state.photos.forEach((photo, idx) => {
+      state.photos.forEach((media, idx) => {
         const item = document.createElement('div');
         item.className = 'photo-item';
         item.dataset.index = idx;
         item.draggable = true;
+        
+        const previewHtml = media.type === 'video' 
+          ? `<video src="${media.src}#t=0.5" muted preload="metadata" style="object-fit: cover; width: 100%; height: 100%; border-radius: 8px;"></video>
+             <div style="position:absolute; top:5px; left:5px; background:rgba(0,0,0,0.6); color:#fff; font-size:10px; padding:2px 5px; border-radius:4px;">🎥 VÍDEO</div>`
+          : `<img src="${media.src}" alt="Mídia ${idx + 1}">`;
+
         item.innerHTML = `
           <span class="photo-order">${idx + 1}</span>
-          <img src="${photo.src}" alt="Foto ${idx + 1}">
+          ${previewHtml}
           <button class="photo-remove" title="Remover" data-idx="${idx}">✕</button>
         `;
         grid.appendChild(item);

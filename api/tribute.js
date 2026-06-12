@@ -4,6 +4,7 @@
 // ============================================================
 
 const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const crypto = require("crypto");
 
 // ── AWS Configuration ──
@@ -42,6 +43,56 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Credenciais AWS não configuradas na Vercel.' });
   }
 
+  // ── GET — Carregar homenagem ou Presigned URL ──
+  if (req.method === 'GET') {
+    const { id, action, filename, filetype } = req.query;
+
+    // 1. Gerar Presigned URL para upload direto de vídeo
+    if (action === 'upload' && filename) {
+      try {
+        const key = `videos/${Date.now()}_${filename.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+        const command = new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: key,
+          ContentType: filetype || 'video/mp4'
+        });
+
+        const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+        const publicUrl = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/${key}`;
+
+        return res.status(200).json({ uploadUrl, publicUrl });
+      } catch (error) {
+        console.error('Presign error:', error);
+        return res.status(500).json({ error: error.message });
+      }
+    }
+
+    // 2. Carregar homenagem (padrão)
+    if (!id) {
+      return res.status(400).json({ error: 'ID não fornecido' });
+    }
+
+    try {
+      const key = `tributes/${id}.json`;
+      const command = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      });
+
+      const response = await s3Client.send(command);
+      const dataString = await streamToString(response.Body);
+      const data = JSON.parse(dataString);
+
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error('Load error (S3):', error);
+      if (error.name === 'NoSuchKey') {
+        return res.status(404).json({ error: 'Homenagem não encontrada.' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
   // ── POST — Salvar homenagem ──
   if (req.method === 'POST') {
     try {
@@ -60,37 +111,6 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ id });
     } catch (error) {
       console.error('Save error (S3):', error);
-      return res.status(500).json({ error: error.message });
-    }
-  }
-
-  // ── GET — Carregar homenagem ──
-  if (req.method === 'GET') {
-    const { id } = req.query;
-
-    if (!id) {
-      return res.status(400).json({ error: 'ID não fornecido' });
-    }
-
-    try {
-      const key = `tributes/${id}.json`;
-
-      const command = new GetObjectCommand({
-        Bucket: BUCKET_NAME,
-        Key: key,
-      });
-
-      const response = await s3Client.send(command);
-      const dataString = await streamToString(response.Body);
-      const data = JSON.parse(dataString);
-
-      return res.status(200).json(data);
-    } catch (error) {
-      console.error('Load error (S3):', error);
-      // Se não encontrou o arquivo, o erro é NoSuchKey
-      if (error.name === 'NoSuchKey') {
-        return res.status(404).json({ error: 'Homenagem não encontrada.' });
-      }
       return res.status(500).json({ error: error.message });
     }
   }

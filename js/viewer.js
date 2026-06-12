@@ -257,7 +257,9 @@
             <div class="photo-frame-wrapper">
               <div class="photo-frame-glow"></div>
               <div class="photo-frame">
-                <img src="${photo.src}" alt="Memória ${sceneNum}" loading="lazy">
+                ${photo.type === 'video'
+                  ? `<video src="${photo.src}" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>`
+                  : `<img src="${photo.src}" alt="Memória ${sceneNum}" loading="lazy">`}
               </div>
               <div class="photo-decoration">${decorEmoji}</div>
             </div>
@@ -293,8 +295,11 @@
             ${constellationPhotos.map((photo, idx) => {
               const sizes = [80, 70, 90, 75, 85, 65, 95, 72];
               const size = sizes[idx % sizes.length];
+              const mediaHtml = photo.type === 'video'
+                ? `<video src="${photo.src}#t=0.5" muted preload="metadata" style="width:100%; height:100%; object-fit:cover;"></video>`
+                : `<img src="${photo.src}" alt="">`;
               return `<div class="constellation-photo" style="width:${size}px;height:${size}px;animation-delay:${idx * 0.1}s">
-                <img src="${photo.src}" alt="">
+                ${mediaHtml}
               </div>`;
             }).join('')}
           </div>

@@ -259,8 +259,13 @@
           <span class="upload-icon">📷</span>
           <h3>Arraste suas fotos aqui</h3>
           <p>ou clique para selecionar</p>
-          <p class="upload-hint">JPG, PNG, WEBP • Até 8 fotos</p>
-          <input type="file" id="photoInput" multiple accept="image/*" class="file-input">
+          <input type="file" id="photoInput" multiple accept="image/*,video/*" style="display:none">
+          <button class="btn-primary" onclick="document.getElementById('photoInput').click()" style="margin-top:1.5rem">
+            Escolher Arquivos
+          </button>
+          <p style="margin-top:1rem; font-size:0.875rem; color:var(--text-muted);">
+            Arraste fotos ou vídeos (até 200MB) para cá
+          </p>
         </div>
         <div class="photos-grid" id="photosGrid"></div>
         <div class="step-nav">
