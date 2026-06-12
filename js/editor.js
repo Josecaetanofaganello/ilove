@@ -530,7 +530,7 @@
         "Para sempre o meu amor, a minha escolha e a minha vida."
       ]
     },
-    mothersday: {
+    mothers: {
       opening: [
         "Mãe, um pedacinho da nossa história para celebrar você...",
         "Por todo amor, carinho e paciência. Essa é para você...",
@@ -542,7 +542,7 @@
         "Seu amor é o meu maior presente. Feliz dia das mães!"
       ]
     },
-    fathersday: {
+    fathers: {
       opening: [
         "Pai, um pequeno resumo de todas as aventuras que vivemos...",
         "Para o meu herói e meu maior exemplo. Essa é para você...",
