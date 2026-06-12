@@ -509,6 +509,7 @@
         }
       }, 3000); // Polling a cada 3 segundos
     }
+  } // <-- MISSING BRACKET FOR initFinalize()
 
   function buildTributeData() {
     return {
