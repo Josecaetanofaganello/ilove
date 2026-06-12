@@ -60,7 +60,9 @@ module.exports = async function handler(req, res) {
     // 2. Avisar o Telegram
     if (BOT_TOKEN && CHAT_ID) {
       const approveUrl = `https://${req.headers.host}/api/approve?id=${id}&token=${BOT_TOKEN}`;
-      const text = `💸 *Novo Pagamento PIX (Aguardando)*\n\n👤 *Cliente:* ${customerName}\n📱 *WhatsApp:* ${customerPhone || 'Não informado'}\n💰 *Valor:* R$ 20,00\n\n_Quando o dinheiro cair na sua conta, clique abaixo para liberar a homenagem no celular do cliente automaticamente._`;
+      const tributeUrl = `https://${req.headers.host}/view.html?id=${id}`;
+      
+      const text = `💸 *Novo Pagamento PIX (Aguardando)*\n\n👤 *Cliente:* ${customerName}\n📱 *WhatsApp/Email:* ${customerPhone || 'Não informado'}\n💰 *Valor:* R$ 20,00\n🔗 *Link da Homenagem:* ${tributeUrl}\n\n_Quando o dinheiro cair na sua conta, clique abaixo para liberar a homenagem no celular do cliente automaticamente._`;
 
       const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
       await fetch(telegramUrl, {
