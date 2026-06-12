@@ -921,7 +921,20 @@
 
 @media (max-width: 640px) {
   .site-header {
-    padding: 0.875rem 1.25rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .btn-nav {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .logo-text {
+    font-size: 1.1rem;
+  }
+
+  .logo-icon {
+    font-size: 1.2rem;
   }
 
   .hero {
