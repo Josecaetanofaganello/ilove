@@ -46,7 +46,61 @@
 
     // Show opening screen
     showOpeningScreen();
+
+    // Check for demo mode
+    const isDemo = new URLSearchParams(window.location.search).get('demo') === 'true';
+    if (isDemo) {
+      injectDemoWatermark();
+    }
   });
+
+  /* ── Demo Watermark ── */
+  function injectDemoWatermark() {
+    const wm = document.createElement('div');
+    wm.style.cssText = `
+      position: fixed;
+      inset: -50%;
+      z-index: 999999;
+      pointer-events: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transform: rotate(-25deg);
+    `;
+    
+    for (let i = 0; i < 40; i++) {
+      const text = document.createElement('div');
+      text.innerHTML = 'PRÉ-VISUALIZAÇÃO<br>AGUARDANDO PAGAMENTO';
+      text.style.cssText = `
+        font-family: 'Inter', sans-serif;
+        font-weight: 900;
+        font-size: 3.5rem;
+        color: rgba(255, 255, 255, 0.25);
+        text-align: center;
+        margin: 2rem 4rem;
+        white-space: nowrap;
+        user-select: none;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+      `;
+      wm.appendChild(text);
+    }
+    
+    // Add a top banner
+    const banner = document.createElement('div');
+    banner.innerHTML = '⚠️ MODO DE PRÉ-VISUALIZAÇÃO — O LINK FINAL NÃO TERÁ ESSA MARCA D\\'ÁGUA';
+    banner.style.cssText = `
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #D4296B; color: #fff; text-align: center;
+      padding: 0.75rem; font-family: 'Inter', sans-serif;
+      font-weight: bold; font-size: 0.85rem; z-index: 9999999;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    `;
+    
+    document.body.appendChild(wm);
+    document.body.appendChild(banner);
+  }
 
   /* ── Error Screen ── */
   function showErrorScreen() {

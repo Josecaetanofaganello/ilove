@@ -390,7 +390,7 @@
 
     let tributeId = null;
 
-    document.getElementById('generateBtn')?.addEventListener('click', () => {
+    document.getElementById('generateBtn')?.addEventListener('click', async () => {
       collectStep2();
       collectStories();
       state.youtubeUrl = document.getElementById('youtubeUrl')?.value.trim() || '';
@@ -400,13 +400,37 @@
         return;
       }
 
-      // Show Payment Modal
-      const modal = document.getElementById('paymentModal');
-      if (modal) {
-        modal.style.display = 'flex';
-        document.getElementById('paymentForm').style.display = 'block';
-        document.getElementById('pixContainer').style.display = 'none';
-        document.getElementById('waitingContainer').style.display = 'none';
+      const btn = document.getElementById('generateBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Salvando homenagem...';
+      btn.disabled = true;
+
+      try {
+        // Salva a homenagem no S3 (status pendente implicito via API) e pega o ID
+        const urlObj = await Encoder.saveAndGetUrl(buildTributeData());
+        tributeId = new URL(urlObj).searchParams.get('id');
+
+        // Show Payment Modal
+        const modal = document.getElementById('paymentModal');
+        if (modal) {
+          modal.style.display = 'flex';
+          document.getElementById('paymentForm').style.display = 'block';
+          document.getElementById('pixContainer').style.display = 'none';
+          document.getElementById('waitingContainer').style.display = 'none';
+        }
+      } catch (e) {
+        showToast('Erro ao salvar homenagem: ' + e.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('viewDemoBtn')?.addEventListener('click', () => {
+      if (tributeId) {
+        window.open(`${window.location.origin}/view.html?id=${tributeId}&demo=true`, '_blank');
+      } else {
+        showToast('Homenagem não foi salva ainda!');
       }
     });
 
@@ -424,11 +448,6 @@
       btn.disabled = true;
 
       try {
-        // Salva a homenagem no S3 e pega o ID
-        const urlObj = await Encoder.saveAndGetUrl(buildTributeData());
-        // Extract ID from urlObj
-        tributeId = new URL(urlObj).searchParams.get('id');
-
         // Notifica o Telegram via API e marca status pendente
         const res = await fetch('/api/checkout', {
           method: 'POST',
