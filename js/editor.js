@@ -516,6 +516,86 @@
     showToast('🎉 Homenagem criada com sucesso!');
   }
 
+  /* ── Phrase Suggestions ── */
+  const suggestions = {
+    valentine: {
+      opening: [
+        "Desde o dia em que te conheci, minha vida ganhou novas cores...",
+        "Um pequeno resumo da nossa grande história de amor...",
+        "As melhores memórias que construímos até aqui..."
+      ],
+      closing: [
+        "Que venham muitos outros capítulos para a nossa história. Te amo infinitamente!",
+        "Você é o meu melhor presente. Feliz dia dos namorados!",
+        "Para sempre o meu amor, a minha escolha e a minha vida."
+      ]
+    },
+    mother: {
+      opening: [
+        "Mãe, um pedacinho da nossa história para celebrar você...",
+        "Por todo amor, carinho e paciência. Essa é para você...",
+        "As melhores memórias ao lado da melhor mãe do mundo..."
+      ],
+      closing: [
+        "Obrigado por ser meu porto seguro. Te amo infinitamente, feliz dia das mães!",
+        "Tudo o que eu sou, devo a você. Feliz dia das mães, te amo demais!",
+        "Seu amor é o meu maior presente. Feliz dia das mães!"
+      ]
+    },
+    father: {
+      opening: [
+        "Pai, um pequeno resumo de todas as aventuras que vivemos...",
+        "Para o meu herói e meu maior exemplo. Essa é para você...",
+        "As melhores memórias ao lado do melhor pai do mundo..."
+      ],
+      closing: [
+        "Obrigado por ser meu maior incentivador. Feliz dia dos pais, te amo!",
+        "Tudo o que eu sou, devo a você. Feliz dia dos pais!",
+        "Ter você como pai é o meu maior privilégio. Feliz dia!"
+      ]
+    },
+    birthday: {
+      opening: [
+        "Hoje é dia de celebrar a vida de alguém muito especial...",
+        "Um pequeno túnel do tempo para comemorar o seu dia...",
+        "As melhores memórias para um dia inesquecível..."
+      ],
+      closing: [
+        "Que esse novo ciclo te traga ainda mais luz, paz e sucesso. Parabéns!",
+        "Feliz aniversário! Que venham muitos outros anos de vida para celebrarmos juntos.",
+        "Aproveite o seu dia! Você merece toda a felicidade do mundo. Parabéns!"
+      ]
+    },
+    custom: {
+      opening: [
+        "Uma pequena homenagem para guardar momentos inesquecíveis...",
+        "Separamos algumas memórias especiais para você...",
+        "Porque momentos felizes merecem ser lembrados sempre..."
+      ],
+      closing: [
+        "Com muito carinho, para você guardar essas lembranças para sempre.",
+        "Obrigado por fazer parte dessa história incrível!",
+        "Que venham muitas outras memórias inesquecíveis. Com carinho."
+      ]
+    }
+  };
+
+  function suggestPhrase(fieldId, type) {
+    const activeTheme = document.querySelector('.occasion-card.active')?.dataset.theme || 'custom';
+    const phrases = suggestions[activeTheme][type];
+    const el = document.getElementById(fieldId);
+    
+    let newPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    while (newPhrase === el.value && phrases.length > 1) {
+      newPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    }
+    
+    el.value = newPhrase;
+  }
+
+  document.getElementById('btnSuggestOpening')?.addEventListener('click', () => suggestPhrase('openingMessage', 'opening'));
+  document.getElementById('btnSuggestClosing')?.addEventListener('click', () => suggestPhrase('closingMessage', 'closing'));
+
   /* ── Toast ── */
   function showToast(message, duration = 3000) {
     let toast = document.getElementById('editor-toast');
