@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Homenagem — Crie Momentos Inesquecíveis</title>
-  <meta name="description" content="Crie homenagens cinematográficas para datas especiais. Personalize com fotos, textos e música para surpreender quem você ama.">
+  <meta name="description"
+    content="Crie homenagens cinematográficas para datas especiais. Personalize com fotos, textos e música para surpreender quem você ama.">
   <meta property="og:title" content="Homenagem — Crie Momentos Inesquecíveis">
-  <meta property="og:description" content="Transforme memórias em momentos eternos com uma experiência como um filme interativo.">
+  <meta property="og:description"
+    content="Transforme memórias em momentos eternos com uma experiência como um filme interativo.">
   <meta property="og:type" content="website">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Raleway:wght@300;400;600;700&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Raleway:wght@300;400;600;700&family=Cinzel:wght@400;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- LZString -->
   <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
@@ -22,6 +27,7 @@
   <link rel="stylesheet" href="css/themes.css">
   <link rel="stylesheet" href="css/editor.css">
 </head>
+
 <body class="theme-valentine">
 
   <!-- Particle Canvas -->
@@ -43,7 +49,8 @@
 
     <!-- Ambient orbs -->
     <div class="orb orb-primary" style="width:600px;height:600px;top:-15%;left:-15%;z-index:0;"></div>
-    <div class="orb orb-secondary" style="width:500px;height:500px;bottom:-10%;right:-10%;animation-delay:-4s;z-index:0;"></div>
+    <div class="orb orb-secondary"
+      style="width:500px;height:500px;bottom:-10%;right:-10%;animation-delay:-4s;z-index:0;"></div>
     <div class="orb orb-accent" style="width:350px;height:350px;top:40%;left:30%;animation-delay:-2s;z-index:0;"></div>
 
     <!-- Content -->
@@ -60,7 +67,9 @@
       <div class="hero-actions">
         <a href="#create" class="btn-primary" id="startCreating" style="display: inline-flex; text-decoration: none;">
           <span>Criar Minha Homenagem</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
         </a>
         <a href="#how-it-works" class="btn-ghost">Como funciona</a>
       </div>
@@ -79,31 +88,42 @@
         <div class="phone-screen" id="phoneScreen">
           <div class="phone-scene-preview">
             <div class="preview-hearts" id="previewEmoji">💕</div>
-            <div class="preview-text" style="font-family:var(--font-display);font-size:1.4rem;font-style:italic;color:var(--text-light);text-shadow:0 0 20px rgba(212,41,107,.5);">
+            <div class="preview-text"
+              style="font-family:var(--font-display);font-size:1.4rem;font-style:italic;color:var(--text-light);text-shadow:0 0 20px rgba(212,41,107,.5);">
               Nossa História
             </div>
-            <div style="margin-top:.5rem;font-size:.75rem;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;">
+            <div
+              style="margin-top:.5rem;font-size:.75rem;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;">
               Role para explorar ↓
             </div>
           </div>
           <!-- Mini particle canvas on phone -->
           <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:40px;">
-            <div style="position:absolute;top:20%;left:10%;font-size:1.2rem;animation:float 3s ease-in-out infinite;opacity:.6;">💕</div>
-            <div style="position:absolute;top:60%;right:8%;font-size:1rem;animation:float 4s 1s ease-in-out infinite;opacity:.4;">❤️</div>
-            <div style="position:absolute;bottom:25%;left:20%;font-size:.9rem;animation:float 3.5s 2s ease-in-out infinite;opacity:.5;">✨</div>
+            <div
+              style="position:absolute;top:20%;left:10%;font-size:1.2rem;animation:float 3s ease-in-out infinite;opacity:.6;">
+              💕</div>
+            <div
+              style="position:absolute;top:60%;right:8%;font-size:1rem;animation:float 4s 1s ease-in-out infinite;opacity:.4;">
+              ❤️</div>
+            <div
+              style="position:absolute;bottom:25%;left:20%;font-size:.9rem;animation:float 3.5s 2s ease-in-out infinite;opacity:.5;">
+              ✨</div>
           </div>
         </div>
       </div>
 
       <!-- Side labels -->
       <div style="position:absolute;right:-160px;top:30%;display:flex;flex-direction:column;gap:1.5rem;">
-        <div style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
+        <div
+          style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
           📸 Fotos personalizadas
         </div>
-        <div style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
+        <div
+          style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
           🎵 Música de fundo
         </div>
-        <div style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
+        <div
+          style="padding:.5rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.78rem;color:var(--text-dim);white-space:nowrap;">
           💌 Link para compartilhar
         </div>
       </div>
@@ -126,7 +146,7 @@
           <div class="step-number">02</div>
           <span class="step-icon">📸</span>
           <h3>Adicione as Fotos</h3>
-          <p>Faça upload de até 8 fotos especiais — cada uma vira uma cena da história</p>
+          <p>Faça upload de até 20 fotos especiais — cada uma vira uma cena da história</p>
         </div>
         <div class="step-card">
           <div class="step-number">03</div>
@@ -234,15 +254,20 @@
           </div>
           <div class="form-group full-width">
             <label for="specialDate">Data especial</label>
-            <input type="text" id="specialDate" placeholder="Ex: 14 de Fevereiro de 2025" class="form-input" maxlength="50">
+            <input type="text" id="specialDate" placeholder="Ex: 14 de Fevereiro de 2025" class="form-input"
+              maxlength="50">
           </div>
           <div class="form-group full-width">
             <label for="openingMessage">Mensagem de abertura</label>
-            <textarea id="openingMessage" placeholder="Essa mensagem aparecerá na primeira cena, como uma introdução à história de vocês..." class="form-textarea" rows="3" maxlength="300"></textarea>
+            <textarea id="openingMessage"
+              placeholder="Essa mensagem aparecerá na primeira cena, como uma introdução à história de vocês..."
+              class="form-textarea" rows="3" maxlength="300"></textarea>
           </div>
           <div class="form-group full-width">
             <label for="closingMessage">Mensagem final ❤️ (a mais especial!)</label>
-            <textarea id="closingMessage" placeholder="Essa será a mensagem da cena final — o clímax da experiência. Seja profundo e emocionante!" class="form-textarea" rows="3" maxlength="300"></textarea>
+            <textarea id="closingMessage"
+              placeholder="Essa será a mensagem da cena final — o clímax da experiência. Seja profundo e emocionante!"
+              class="form-textarea" rows="3" maxlength="300"></textarea>
           </div>
         </div>
         <div class="step-nav">
@@ -296,9 +321,13 @@
           <small class="form-hint">🎵 A música tocará suavemente durante toda a experiência</small>
         </div>
 
-        <div style="padding:1.25rem;background:rgba(255,255,255,.03);border:1px solid var(--border-subtle);border-radius:16px;margin-bottom:1.5rem;">
-          <h4 style="font-family:var(--font-display);font-size:1rem;color:var(--text-light);margin-bottom:.75rem;font-style:italic;">📋 Resumo da sua homenagem</h4>
-          <div id="tributeSummary" style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;color:var(--text-dim);">
+        <div
+          style="padding:1.25rem;background:rgba(255,255,255,.03);border:1px solid var(--border-subtle);border-radius:16px;margin-bottom:1.5rem;">
+          <h4
+            style="font-family:var(--font-display);font-size:1rem;color:var(--text-light);margin-bottom:.75rem;font-style:italic;">
+            📋 Resumo da sua homenagem</h4>
+          <div id="tributeSummary"
+            style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.85rem;color:var(--text-dim);">
             <!-- Filled by JS -->
           </div>
         </div>
@@ -332,18 +361,27 @@
   </footer>
 
   <!-- Payment Modal -->
-  <div id="paymentModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; padding:1rem; backdrop-filter:blur(10px);">
-    <div style="background:#1e293b; padding:2.5rem; border-radius:24px; max-width:450px; width:100%; text-align:center; position:relative; box-shadow:0 20px 40px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1);">
-      <h2 style="color:#10b981; font-family:'Playfair Display',serif; font-size:1.8rem; margin-bottom:0.5rem;">Homenagem Pronta! 🎬</h2>
+  <div id="paymentModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; padding:1rem; backdrop-filter:blur(10px);">
+    <div
+      style="background:#1e293b; padding:2.5rem; border-radius:24px; max-width:450px; width:100%; text-align:center; position:relative; box-shadow:0 20px 40px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1);">
+      <h2 style="color:#10b981; font-family:'Playfair Display',serif; font-size:1.8rem; margin-bottom:0.5rem;">Homenagem
+        Pronta! 🎬</h2>
       <p style="color:#94a3b8; font-size:0.95rem; line-height:1.5; margin-bottom:1.5rem;">
-        Para liberar o link e compartilhar essa experiência cinematográfica com quem você ama, realize o pagamento de <b>R$ 20,00</b>.
+        Para liberar o link e compartilhar essa experiência cinematográfica com quem você ama, realize o pagamento de
+        <b>R$ 20,00</b>.
       </p>
 
       <div id="paymentForm">
-        <input type="text" id="payName" class="form-input" placeholder="Seu Nome" style="margin-bottom:1rem; text-align:center;">
-        <input type="text" id="payPhone" class="form-input" placeholder="Seu WhatsApp (opcional)" style="margin-bottom:1.5rem; text-align:center;">
-        <button id="generatePixBtn" class="btn-primary" style="width:100%; font-size:1rem; margin-bottom:1rem;">Gerar PIX de R$ 20,00</button>
-        <button id="viewDemoBtn" class="btn-primary" style="width:100%; font-size:1rem; background:transparent; border:2px solid var(--primary); color:var(--text-light);">👀 Ver Demo (Marca d'água)</button>
+        <input type="text" id="payName" class="form-input" placeholder="Seu Nome"
+          style="margin-bottom:1rem; text-align:center;">
+        <input type="text" id="payPhone" class="form-input" placeholder="Seu WhatsApp (opcional)"
+          style="margin-bottom:1.5rem; text-align:center;">
+        <button id="generatePixBtn" class="btn-primary" style="width:100%; font-size:1rem; margin-bottom:1rem;">Gerar
+          PIX de R$ 20,00</button>
+        <button id="viewDemoBtn" class="btn-primary"
+          style="width:100%; font-size:1rem; background:transparent; border:2px solid var(--primary); color:var(--text-light);">👀
+          Ver Demo (Marca d'água)</button>
       </div>
 
       <div id="pixContainer" style="display:none;">
@@ -355,21 +393,29 @@
           Escaneie o QR Code acima pelo app do seu banco para pagar o valor de R$ 20,00.
         </p>
 
-        <button id="confirmPaymentBtn" class="btn-primary" style="width:100%; background:#10b981; box-shadow:0 0 20px rgba(16,185,129,0.4);">
+        <button id="confirmPaymentBtn" class="btn-primary"
+          style="width:100%; background:#10b981; box-shadow:0 0 20px rgba(16,185,129,0.4);">
           Já realizei o pagamento
         </button>
       </div>
 
       <div id="waitingContainer" style="display:none; padding:2rem 0;">
-        <div style="width:40px; height:40px; border:4px solid rgba(16,185,129,0.2); border-top-color:#10b981; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 1.5rem;"></div>
+        <div
+          style="width:40px; height:40px; border:4px solid rgba(16,185,129,0.2); border-top-color:#10b981; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 1.5rem;">
+        </div>
         <h3 style="color:#fff; margin-bottom:0.5rem;">Aguardando Confirmação...</h3>
-        <p style="color:#94a3b8; font-size:0.9rem;">A tela atualizará sozinha e o link aparecerá magicamente assim que o pagamento for identificado.</p>
+        <p style="color:#94a3b8; font-size:0.9rem;">A tela atualizará sozinha e o link aparecerá magicamente assim que o
+          pagamento for identificado.</p>
       </div>
     </div>
   </div>
 
   <style>
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 
   <!-- Scripts -->
@@ -405,4 +451,5 @@
     }
   </script>
 </body>
+
 </html>
