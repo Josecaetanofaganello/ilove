@@ -28,7 +28,7 @@ module.exports = async function handler(req, res) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Access-Key': JSONBIN_API_KEY,
+          'X-Master-Key': JSONBIN_API_KEY,
           'X-Bin-Private': 'false',
           'X-Bin-Name': `tribute_${Date.now()}`,
         },
@@ -63,7 +63,7 @@ module.exports = async function handler(req, res) {
     try {
       const response = await fetch(`${JSONBIN_URL}/${id}/latest`, {
         headers: {
-          'X-Access-Key': JSONBIN_API_KEY,
+          'X-Master-Key': JSONBIN_API_KEY,
         },
       });
 
