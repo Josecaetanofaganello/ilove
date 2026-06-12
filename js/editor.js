@@ -369,7 +369,14 @@
         showGeneratedLink(url);
         showToast('🎉 Homenagem salva com sucesso!');
       } catch (e) {
-        showToast('❌ Erro ao salvar: ' + e.message + '. Configure JSONBIN_API_KEY.');
+        console.warn('JSONBin falhou, usando URL longa como fallback:', e);
+        const fallbackUrl = Encoder.generateViewerUrl(buildTributeData());
+        if (fallbackUrl) {
+          showGeneratedLink(fallbackUrl);
+          showToast('⚠️ Salvo com link longo (limite de 100kb excedido no JSONBin).');
+        } else {
+          showToast('❌ Erro ao salvar: ' + e.message);
+        }
       } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;

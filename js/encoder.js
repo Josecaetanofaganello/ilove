@@ -96,13 +96,13 @@ const Encoder = {
   },
 
   /**
-   * Redimensiona e comprime uma imagem para base64
+   * Redimensiona e comprime uma imagem para WebP em base64
    * @param {File} file - Arquivo de imagem
    * @param {number} maxSize - Tamanho máximo em px
-   * @param {number} quality - Qualidade JPEG (0-1)
+   * @param {number} quality - Qualidade WebP (0-1)
    * @returns {Promise<string>} base64 data URL
    */
-  async compressImage(file, maxSize = 600, quality = 0.55) {
+  async compressImage(file, maxSize = 400, quality = 0.45) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const reader = new FileReader();
@@ -128,7 +128,7 @@ const Encoder = {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        resolve(canvas.toDataURL('image/webp', quality));
       };
 
       img.onerror = reject;
