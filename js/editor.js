@@ -438,14 +438,11 @@
         
         if (!res.ok) throw new Error('Falha ao iniciar checkout.');
 
-        const checkoutData = await res.json();
-        const brCode = checkoutData.brCode || 'Erro ao gerar Pix. Chave: 01385988002';
-        
-        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brCode)}`;
-
+        // Usa imagem estática para proteção
+        const qrCodeUrl = `assets/pix.jpeg`;
         document.getElementById('pixQrCode').src = qrCodeUrl;
-        document.getElementById('pixCodeInput').value = brCode;
-
+        
+        // A chave estática do mercado pago foi definida no HTML, então apenas mostramos o container
         document.getElementById('paymentForm').style.display = 'none';
         document.getElementById('pixContainer').style.display = 'block';
 

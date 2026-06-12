@@ -347,13 +347,12 @@
 
       <div id="pixContainer" style="display:none;">
         <div style="background:#fff; padding:1rem; border-radius:12px; display:inline-block; margin-bottom:1.5rem;">
-          <img id="pixQrCode" src="" alt="QR Code PIX" style="width:200px; height:200px;">
+          <img id="pixQrCode" src="" alt="QR Code PIX" style="width:200px; height:auto; display:block;">
         </div>
-        
-        <input type="text" id="pixCodeInput" class="form-input" readonly style="font-size:0.8rem; text-align:center; color:#94a3b8; margin-bottom:0.5rem;">
-        <button id="copyPixBtn" class="btn-primary" style="background:transparent; border:1px solid var(--primary); margin-bottom:1.5rem; padding:0.6rem; font-size:0.9rem;">
-          📋 Copiar Código PIX
-        </button>
+
+        <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:1.5rem;">
+          Escaneie o QR Code acima pelo app do seu banco para pagar o valor de R$ 20,00.
+        </p>
 
         <button id="confirmPaymentBtn" class="btn-primary" style="width:100%; background:#10b981; box-shadow:0 0 20px rgba(16,185,129,0.4);">
           Já realizei o pagamento
