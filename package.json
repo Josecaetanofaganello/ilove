@@ -1,0 +1,16 @@
+{
+  "name": "homenagem",
+  "version": "1.0.0",
+  "description": "Site de homenagens cinematográficas interativas",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "devDependencies": {
+    "vercel": "^37.0.0"
+  }
+}

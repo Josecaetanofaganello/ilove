@@ -331,37 +331,48 @@
 
   /* ── Finalize ── */
   function initFinalize() {
-    document.getElementById('previewBtn')?.addEventListener('click', () => {
+    document.getElementById('previewBtn')?.addEventListener('click', async () => {
       collectStep2();
       collectStories();
       state.youtubeUrl = document.getElementById('youtubeUrl')?.value.trim() || '';
 
-      const url = Encoder.generateViewerUrl(buildTributeData());
-      if (url) {
+      const btn = document.getElementById('previewBtn');
+      btn.textContent = '⏳ Gerando preview...';
+      btn.disabled = true;
+
+      try {
+        const url = await Encoder.saveAndGetUrl(buildTributeData());
         window.open(url, '_blank');
-      } else {
-        showToast('Erro ao gerar preview. Tente novamente.');
+      } catch (e) {
+        // Fallback para URL hash se a API falhar (ex: ambiente local sem config)
+        const url = Encoder.generateViewerUrl(buildTributeData());
+        if (url) window.open(url, '_blank');
+        else showToast('Erro ao gerar preview: ' + e.message);
+      } finally {
+        btn.textContent = '👁️ Pré-visualizar';
+        btn.disabled = false;
       }
     });
 
-    document.getElementById('generateBtn')?.addEventListener('click', () => {
+    document.getElementById('generateBtn')?.addEventListener('click', async () => {
       collectStep2();
       collectStories();
       state.youtubeUrl = document.getElementById('youtubeUrl')?.value.trim() || '';
 
-      const data = buildTributeData();
-      const sizeKb = Encoder.estimateSize(data);
+      const btn = document.getElementById('generateBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Salvando homenagem...';
+      btn.disabled = true;
 
-      if (sizeKb > 1800) {
-        showToast('Dados muito grandes! Tente usar menos fotos ou imagens menores.');
-        return;
-      }
-
-      const url = Encoder.generateViewerUrl(data);
-      if (url) {
+      try {
+        const url = await Encoder.saveAndGetUrl(buildTributeData());
         showGeneratedLink(url);
-      } else {
-        showToast('Erro ao gerar link. Tente novamente.');
+        showToast('🎉 Homenagem salva com sucesso!');
+      } catch (e) {
+        showToast('❌ Erro ao salvar: ' + e.message + '. Configure JSONBIN_API_KEY.');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
       }
     });
 

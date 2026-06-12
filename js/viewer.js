@@ -16,8 +16,16 @@
 
   /* ── Init ── */
   document.addEventListener('DOMContentLoaded', async () => {
-    // Load & decode data
-    tributeData = Encoder.parseFromUrl();
+    // Mostrar loading enquanto busca dados
+    const loadingText = document.querySelector('.loading-text');
+    if (loadingText) loadingText.textContent = 'Buscando sua homenagem...';
+
+    try {
+      // Tenta carregar via API (?id=...) ou legado (hash)
+      tributeData = await Encoder.loadFromUrl();
+    } catch (e) {
+      console.error('Erro ao carregar homenagem:', e);
+    }
 
     if (!tributeData) {
       showErrorScreen();
